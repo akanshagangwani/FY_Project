@@ -1,0 +1,61 @@
+name: BDD Integration Tests
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Run on openwallet-foundation and non-draft PRs or on non-PR events
+    if: (github.repository == 'openwallet-foundation/acapy') && ((github.event_name == 'pull_request' && github.event.pull_request.draft == false) || (github.event_name != 'pull_request'))
+    outputs:
+      is_release: ${{ steps.check_if_release.outputs.is_release }}
+    steps:
+      - name: checkout-acapy
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check changed files
+        id: check-changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files_yaml: |
+            src: 
+              - acapy_agent/**/*
+              - poetry.lock
+              - pyproject.toml
+              - docker/*
+            demo: "demo/**/*"
+      - name: Check if demo or src files changed
+        id: check-if-demo-or-src-changed
+        run: |
+          if [ "${{ steps.check-changed-files.outputs.demo_any_changed }}" != "true" ] && [ "${{ steps.check-changed-files.outputs.src_any_changed }}" != "true" ] && [ '${{ github.event_name }}' == 'pull_request' ]; then
+            echo "No demo or src files changed..."
+            echo run_tests=false >> $GITHUB_OUTPUT
+          fi
+      - name: Check if PR is a release
+        if: steps.check-if-demo-or-src-changed.outputs.run_tests != 'false'
+        uses: ./.github/actions/is-release
+        id: check_if_release
+      - name: Run PR or Nightly Integration Tests
+        if: (steps.check_if_release.outputs.is_release != 'true' && steps.check-if-demo-or-src-changed.outputs.run_tests != 'false')
+        uses: ./.github/actions/run-integration-tests
+      - name: Run Release Integration Tests
+        if: (steps.check_if_release.outputs.is_release == 'true' && steps.check-if-demo-or-src-changed.outputs.run_tests != 'false')
+        uses: ./.github/actions/run-integration-tests
+        with:
+          TEST_SCOPE: "-t @Release -t ~@BBS"
