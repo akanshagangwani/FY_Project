@@ -1,6 +1,6 @@
 import express from 'express';
 import { getStatus, getConnections, createSchema, createCredentialDefinition } from '../controllers/aries.controller.js';
-import { verifyToken } from '../middleware/auth.middleware.js';
+import authenticate  from '../middleware/authenticate.js';
 
 const router = express.Router();
 
@@ -8,8 +8,8 @@ const router = express.Router();
 router.get('/status', getStatus);
 
 // Protected routes
-router.get('/connections', verifyToken, getConnections);
-router.post('/schemas', verifyToken, createSchema);
-router.post('/credential-definitions', verifyToken, createCredentialDefinition);
+router.get('/connections', authenticate, getConnections);
+router.post('/schemas', authenticate, createSchema);
+router.post('/credential-definitions', authenticate, createCredentialDefinition);
 
 export default router;

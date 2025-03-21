@@ -1,11 +1,21 @@
 import express from 'express';
-import { register, login, getCurrentUser } from '../controllers/auth.controller.js';
-import { verifyToken } from '../middleware/auth.middleware.js';
+import * as userController from '../controllers/user.controller.js';
+import * as userValidation from '../validation/user.validation.js';
+import validate from '../middleware/validate.js';
+import authenticate from '../middleware/authenticate.js';
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.get('/me', verifyToken, getCurrentUser);
+router 
+    .route('/create')
+    .post(validate(userValidation.createUser), userController.createUser);
+
+router 
+    .route('/login')
+    .post(validate(userValidation.loginUser), userController.loginUser);
+
+router 
+    .route('/test')
+    .get(authenticate(userValidation.testtoken), userController.testtoken);
 
 export default router;
