@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://anurags:admin@cluster0.jc6rf.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://anurags:admin@cluster0.jc6rf.mongodb.net/FY_Project_DB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Define User Schema
 const userSchema = new mongoose.Schema({
