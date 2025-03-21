@@ -5,96 +5,90 @@ services:
   aries-agent:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.5
     ports:
-      - "8010:8010"
-      - "8001:8001"
-    depends_on:
-      - wallet-db
-    command: >
-      start
-        --auto-provision
-        --seed "000000000000000000000000Steward1"
-        --inbound-transport http '0.0.0.0' 8001
-        --endpoint http://aries-agent:8001
-        --outbound-transport http
-        --admin '0.0.0.0' 8010
-        --admin-insecure-mode
-        --webhook-url http://ethereum-bridge:3000/webhooks
-        --genesis-url https://raw.githubusercontent.com/sovrin-foundation/sovrin/master/sovrin/pool_transactions_builder_genesis
-        --wallet-type askar
-        --wallet-name aries_wallet
-        --wallet-key secret_key
-        --wallet-storage-type postgres_storage
-        --wallet-storage-config '{"url":"wallet-db:5432","max_connections":5}'
-        --wallet-storage-creds '{"account":"DB_USER","password":"DB_PASSWORD","admin_account":"DB_USER","admin_password":"DB_PASSWORD"}'
-        --auto-accept-invites
-        --auto-accept-requests
-        --auto-ping-connection
-        --auto-respond-credential-offer
-        --auto-respond-credential-request
-        --auto-verify-presentation
-        --label ethereum-agent
-        --log-level info
+      - "8031:8031"
+      - "8030:8030"
+    environment:
+      - ACAPY_ENDPOINT=http://host.docker.internal:8030
+      - ACAPY_LABEL=Academic Credentials Issuer
+      - ACAPY_ADMIN_API_KEY=adminkey
+      - ACAPY_ADMIN=0.0.0.0 8031
+      - ACAPY_WALLET_TYPE=indy
+      - ACAPY_WALLET_NAME=issuer_wallet
+      - ACAPY_WALLET_KEY=issuer_key
+      - ACAPY_WALLET_STORAGE_TYPE=postgres_storage
+      - ACAPY_WALLET_STORAGE_CONFIG={"url":"wallet-db:5432","max_connections":5}
+      - ACAPY_WALLET_STORAGE_CREDS={"account":"postgres","password":"postgres","admin_account":"postgres","admin_password":"postgres"}
+      - ACAPY_AUTO_PROVISION=true
+      - ACAPY_LOG_LEVEL=info
+      - ACAPY_GENESIS_URL=http://dev.greenlight.bcovrin.vonx.io/genesis
     networks:
       - aries-network
+    depends_on:
+      - wallet-db
 
   # Wallet database
   wallet-db:
     image: postgres:12
     environment:
-      - POSTGRES_USER=DB_USER
-      - POSTGRES_PASSWORD=DB_PASSWORD
-    ports:
-      - "5433:5432"
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - wallet-db-data:/var/lib/postgresql/data
     networks:
       - aries-network
-      
+
   # Ganache - Ethereum blockchain
   ganache:
     image: trufflesuite/ganache:latest
     ports:
       - "8545:8545"
-    command: ["--server.host", "0.0.0.0", "--server.port", "8545", "--chain.networkId", "1337", "--miner.defaultGasPrice", "20000000000", "--wallet.deterministic", "--wallet.totalAccounts", "10", "--wallet.defaultBalance", "100"]
+    command: --deterministic --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" --chain.networkId 1337 --chain.chainId 1337
     networks:
       - aries-network
-      
-  # Bridge service for connecting Aries to Ethereum
+
+  # Ethereum Bridge service
   ethereum-bridge:
     build:
       context: ../ethereum-bridge
+      dockerfile: Dockerfile
+    image: docker-ethereum-bridge:latest
     ports:
       - "3000:3000"
-    depends_on:
-      - aries-agent
-      - ganache
     environment:
       - ETH_RPC_URL=http://ganache:8545
-      - ARIES_ADMIN_URL=http://aries-agent:8010
-    volumes:
-      - ../ethereum-bridge:/app
+      - ARIES_ADMIN_URL=http://aries-agent:8031
+      - ARIES_ADMIN_API_KEY=adminkey
     networks:
       - aries-network
-      
-  # Backend Python service (optional)
+    depends_on:
+      - ganache
+      - aries-agent
+    volumes:
+      - ../ethereum-bridge:/app
+      - /app/node_modules
+
+  # Backend service
   backend:
     build:
       context: ../backend
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
+    environment:
+      - PORT=3001
+      - ARIES_ADMIN_URL=http://aries-agent:8031
+      - ARIES_ADMIN_API_KEY=adminkey
+      - BRIDGE_URL=http://ethereum-bridge:3000
+    networks:
+      - aries-network
     depends_on:
       - aries-agent
       - ethereum-bridge
-    environment:
-      - BRIDGE_URL=http://ethereum-bridge:3000
-      - PORT=3001
     volumes:
       - ../backend:/app
-    networks:
-      - aries-network
 
 volumes:
   wallet-db-data:
 
 networks:
   aries-network:
+    driver: bridge

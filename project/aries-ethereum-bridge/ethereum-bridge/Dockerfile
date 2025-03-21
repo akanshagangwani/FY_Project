@@ -1,9 +1,16 @@
 FROM --platform=linux/arm64 node:16
 
 WORKDIR /app
-COPY package.json .
+
+# Copy package files first
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Then copy everything else (prevents reinstalling dependencies if only code changes)
 COPY . .
+
 EXPOSE 3000
 
-CMD ["node", "bridge.js"]
+CMD ["node", "src/bridge.js"]
