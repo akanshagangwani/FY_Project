@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/rand', Routes);
+app.use('/sonalimkc', Routes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

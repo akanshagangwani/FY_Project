@@ -10,3 +10,5 @@ export default {
   ARIES_ADMIN_API_KEY: process.env.ARIES_ADMIN_API_KEY,
   BRIDGE_URL: process.env.BRIDGE_URL
 };
+
+console.log(process.env.MONGODB_URL)
