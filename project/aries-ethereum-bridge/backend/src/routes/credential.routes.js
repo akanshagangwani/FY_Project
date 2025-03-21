@@ -1,11 +1,11 @@
 import express from 'express';
 import ariesService from '../services/aries.service.js';
-import { verifyToken } from '../middleware/auth.middleware.js';
+import authenticate from '../middleware/authenticate.js';
 
 const router = express.Router();
 
 // Issue credential
-router.post('/issue', verifyToken, async (req, res, next) => {
+router.post('/issue', authenticate, async (req, res, next) => {
   try {
     const { credentialDefinitionId, attributes, connectionId } = req.body;
     
@@ -26,7 +26,7 @@ router.post('/issue', verifyToken, async (req, res, next) => {
 });
 
 // Get credential records
-router.get('/', verifyToken, async (req, res, next) => {
+router.get('/', authenticate, async (req, res, next) => {
   try {
     const response = await ariesService.apiClient.get('/issue-credential/records');
     res.status(200).json(response.data);
