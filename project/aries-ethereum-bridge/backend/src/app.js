@@ -1,7 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import { errorHandler } from './middleware/error.middleware.js';
+import dotenv from 'dotenv'
+dotenv.config()
 
+console.log(process.env.PORT);
 // Import routes
 import Routes from './routes/index.routes.js';
 
