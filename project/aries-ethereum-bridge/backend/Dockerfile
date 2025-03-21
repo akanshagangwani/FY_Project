@@ -1,12 +1,17 @@
-FROM python:3.9
+FROM node:16
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package files first
+COPY package*.json ./
 
+# Install dependencies
+RUN npm install
+
+# Then copy everything else
 COPY . .
 
 EXPOSE 3001
 
-CMD ["python", "aries_agent.py"]
+# Use the correct entry point for your Node.js app
+CMD ["node", "server.js"]

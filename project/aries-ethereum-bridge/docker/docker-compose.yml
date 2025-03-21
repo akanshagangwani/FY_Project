@@ -38,10 +38,16 @@ services:
 
   # Ganache - Ethereum blockchain
   ganache:
-    image: trufflesuite/ganache:latest
+    image: trufflesuite/ganache-cli:latest  # Try the CLI version instead
     ports:
       - "8545:8545"
-    command: --deterministic --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" --chain.networkId 1337 --chain.chainId 1337
+    # Update command format to match the container's expected syntax
+    command: >
+      --deterministic
+      --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"
+      --networkId 1337
+      --chainId 1337
+      --host 0.0.0.0
     networks:
       - aries-network
 
