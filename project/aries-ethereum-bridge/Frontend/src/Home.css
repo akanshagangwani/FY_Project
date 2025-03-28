@@ -1,0 +1,63 @@
+.home-page {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  background-color: #b74b4b;
+  color: black;
+  padding: 20px;
+  text-align: center;
+}
+
+.hero {
+  background-image: #0d4acc;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+}
+
+.button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #b81818;
+  color: #a6bac4;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #df3535;
+}
+
+#course-button {
+  background-color: #535451;
+  color: #fff;
+}
+
+#department-button {
+  background-color: #535451;
+  color: #fff;
+}
+
+#year-button {
+  background-color: #535451;
+  color: #fff;
+}
+
+.footer {
+  background-color: #b74b4b;
+  color: #000000;
+  padding: 10px;
+  text-align: center;
+  clear: both;
+}
