@@ -42,42 +42,6 @@ class AriesService {
     }
   }
 
-  // Issue a credential
-  async issueCredential(credDefId, attributes, connectionId) {
-    try {
-      const credential = {
-        auto_remove: false,
-        credential_definition_id: credDefId,
-        credential_proposal: {
-          attributes: attributes
-        },
-        connection_id: connectionId,
-        trace: true
-      };
-      
-      const response = await this.apiClient.post('/issue-credential/send', credential);
-      
-      // Notify bridge service (optional)
-      try {
-        await axios.post(`${config.BRIDGE_URL}/webhooks`, {
-          topic: "issue_credential",
-          state: "credential_issued",
-          credential_exchange_id: response.data.credential_exchange_id,
-          schema_id: response.data.schema_id,
-          credential_definition_id: credDefId
-        });
-      } catch (bridgeError) {
-        console.warn('Warning: Could not notify bridge service:', bridgeError.message);
-        // Continue anyway since credential was issued
-      }
-      
-      return response.data;
-    } catch (error) {
-      console.error('Error issuing credential:', error.response?.data || error.message);
-      throw error;
-    }
-  }
-
   // Get all connections
   async getConnections() {
     try {

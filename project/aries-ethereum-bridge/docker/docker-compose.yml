@@ -90,7 +90,7 @@ services:
       - aries-agent
       - ethereum-bridge
     volumes:
-      - ../backend:/app
+      - /app/node_modules
 
 volumes:
   wallet-db-data:
