@@ -13,14 +13,14 @@ body {
 }
 
 /* Background Circle Decorations */
-.background {
+.background1 {
 
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 
-.circle {
+.circle1 {
   position: absolute;
   width: 400px;
   height: 400px;
@@ -28,18 +28,18 @@ body {
   background: linear-gradient(45deg, #6a11cb, #2575fc);
 }
 
-.top-right {
+.top-right1 {
   top: -200px;
   right: -120px;
 }
 
-.bottom-left {
+.bottom-left1 {
   bottom: -200px;
   left: -120px;
 }
 
 /* Login Box */
-.login-box {
+.login-box1 {
   background: #e6d5ff;
   padding: 30px;
   border-radius: 12px;
@@ -63,7 +63,7 @@ body {
 } */
 
 /* Form Styling */
-.login-form label {
+.login-form1 label {
   display: block;
   text-align: left;
   font-size: 14px;
@@ -71,7 +71,7 @@ body {
   font-weight: bold;
 }
 
-.login-form input{
+.login-form1 input{
   width: 90%;
   padding: 10px;
   margin-bottom: 15px;
@@ -79,7 +79,7 @@ body {
   border-radius: 5px;
 }
 
-.dropdown {
+.dropdown1 {
   width: 97.5%;
   padding: 10px;
   margin-bottom: 15px;
@@ -89,7 +89,7 @@ body {
 }
 
 /* Login Button */
-.login-btn {
+.login-btn1 {
   width: 50%;
   padding: 10px;
   background: #6a11cb;
@@ -100,15 +100,15 @@ body {
   cursor: pointer;
 }
 
-.login-btn:hover {
+.login-btn1:hover {
   background: #2575fc;
 }
 
-.password-input {
+.password-input1 {
   position: relative;
 }
 
-.password-visibility-btn {
+.password-visibility-btn1 {
   position: absolute;
   top: 50%;
   right: 10px;
@@ -118,7 +118,7 @@ body {
   cursor: pointer;
 }
 
-.password-visibility-btn i {
+.password-visibility-btn1 i {
   font-size: 16px;
   color: #0f0c13;
   padding-bottom: 12px;

@@ -1,35 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Login.css';
+import { Link } from 'react-router-dom';
+
 function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [animate, setAnimate] = useState(true);
 
   const handlePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setAnimate(true);
+    }, 0); // delay for 0 seconds
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
-    <div className="login-container">
+    <div className={`login-container ${animate ? 'animated' : 'initial'}`}>
       <div className="background">
-        <div className="circle top-right"></div>
-        <div className="circle bottom-left"></div>
+        <div className={`circle top-right ${animate ? '' : 'initial'}`}></div>
+        <div className={`circle bottom-left ${animate ? '' : 'initial'}`}></div>
       </div>
 
-      <div className="login-box">
+      <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
           {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className='heading'>Project</h1>
+          <h1 className="heading">Project</h1>
         </div>
 
-        <div className="login-form">
-          {/* <div className='login-as'>
-            <label>Login as</label>
-          </div>
-
-          <select className="dropdown">
-            <option>Select</option>
-            <option>User</option>
-            <option>Admin</option>
-          </select> */}
-
+        <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
           <label>Email/Login id</label>
           <input type="text" placeholder="Login id" />
 
@@ -51,7 +52,9 @@ function LoginPage() {
             </button>
           </div>
 
-          <button className="login-btn">Login</button>
+          <Link to="/dashboard">
+            <button className="login-btn">Login</button>
+          </Link>
         </div>
       </div>
     </div>

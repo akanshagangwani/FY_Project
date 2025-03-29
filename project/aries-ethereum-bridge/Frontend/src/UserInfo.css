@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .user-info-container2 {
+    display: flex;
+    height: 100vh;
+    margin-right: 750px;
+
+  }
+  
+  .sidebar2 {
+    width: 250px;
+    background: #d9b3ff;
+    padding: 20px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+  }
+  
+  .sidebar2 h2 {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  nav ul li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  nav ul .active {
+    font-weight: bold;
+  }
+  
+  .back-button2 {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  .content2 {
+    flex: 1;
+    padding: 30px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-start; 
+    justify-content: flex-start;  */
+  }
+  
+  header {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+
+  }
+  
+  .profile-pic2 {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .user-info-section2 {
+    width: 100%;
+    max-width: 600px; /* Limit content width */
+  }
+  
+  .user-info-section2 h1 {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .tabs2 {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .tabs2 button {
+    padding: 10px 20px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+  }
+  
+  .tabs2 button.active {
+    background: blueviolet;
+    color: white;
+  }
+  
+  .info-content2 {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+  }
+  
