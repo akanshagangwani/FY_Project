@@ -1,4 +1,4 @@
-version: '3'
+
 
 services:
   # ACA-Py agent - using pre-built image
@@ -7,6 +7,23 @@ services:
     ports:
       - "8031:8031"
       - "8030:8030"
+    command: >
+      start
+        --admin 0.0.0.0 8031
+        --admin-api-key adminkey
+        --endpoint http://host.docker.internal:8030
+        --inbound-transport http 0.0.0.0 8030
+        --outbound-transport http
+        --label "Academic Credentials Issuer"
+        --wallet-type indy
+        --wallet-name issuer_wallet
+        --wallet-key issuer_key
+        --wallet-storage-type postgres_storage
+        --wallet-storage-config '{"url":"wallet-db:5432","max_connections":5}'
+        --wallet-storage-creds '{"account":"postgres","password":"postgres","admin_account":"postgres","admin_password":"postgres"}'
+        --auto-provision
+        --genesis-url http://dev.greenlight.bcovrin.vonx.io/genesis
+        --log-level info
     environment:
       - ACAPY_ENDPOINT=http://host.docker.internal:8030
       - ACAPY_LABEL=Academic Credentials Issuer
