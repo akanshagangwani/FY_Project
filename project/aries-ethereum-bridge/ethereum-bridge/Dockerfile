@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:16
+FROM node:16
 
 WORKDIR /app
 
@@ -8,8 +8,15 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Then copy everything else (prevents reinstalling dependencies if only code changes)
+# Then copy everything else
 COPY . .
+
+# Create contracts directory
+RUN mkdir -p src/contracts
+
+# Copy smart contract
+# This path assumes the Dockerfile is being built with context at the root project directory
+COPY smart\ contracts/contracts/CredentialStore.sol src/contracts/
 
 EXPOSE 3000
 

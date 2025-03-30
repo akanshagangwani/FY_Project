@@ -3,11 +3,18 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from '../Utils/mdb.js';
 import { loginSchema } from '../models/loginSchema.js';
+import { verifyDomain } from '../Utils/verify.domain.js'; 
+import dotenv from 'dotenv';
+dotenv.config();
 
-const secretKey = '77c92a03f526dbd4d46ef422f95b4f71'; // Replace with your actual secret key
+const secretKey = process.env.secretKey ; // Replace with your actual secret key
 
 async function createUser(username, password, email, res) {
     try {
+        // Verify the domain before proceeding
+        const isDomainValid = await verifyDomain(email, res);
+        if (!isDomainValid) return; // Stop execution if domain is invalid
+
         // Check if the user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
