@@ -15,8 +15,8 @@ COPY . .
 RUN mkdir -p src/contracts
 
 # Copy smart contract
-# This path assumes the Dockerfile is being built with context at the root project directory
-COPY smart\ contracts/contracts/CredentialStore.sol src/contracts/
+
+
 
 EXPOSE 3000
 

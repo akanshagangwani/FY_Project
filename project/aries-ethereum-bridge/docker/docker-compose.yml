@@ -88,6 +88,7 @@ services:
     volumes:
       - ../ethereum-bridge:/app
       - /app/node_modules
+      - "../smartcontracts/contracts:/app/src/contracts"
 
   # Backend service
   backend:
