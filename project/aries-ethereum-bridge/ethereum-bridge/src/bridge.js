@@ -15,6 +15,8 @@ app.use(express.json());
 
 // Initialize Web3
 const web3 = new Web3(process.env.ETH_RPC_URL || 'http://localhost:8545');
+const CONTRACT_ADDRESS = '0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0'; 
+const CONTRACT_ABI = JSON.parse(await fs.readFile(path.join(__dirname, 'contract-abi.json'), 'utf8'));
 let contractInstance = null;
 
 // Contract deployment middleware
@@ -76,10 +78,10 @@ const deployContract = async (req, res, next) => {
       data: `0x${bytecode}`
     });
     
-    const gas = await deployTx.estimateGas();
+    const gasLimit = 20000000; // Set a high gas limit
     const deployedContract = await deployTx.send({
       from: accounts[0],
-      gas
+      gas: gasLimit
     });
     
     console.log(`Contract deployed at address: ${deployedContract.options.address}`);
@@ -137,8 +139,12 @@ app.post('/api/credentials', deployContract, bridgeMiddleware, async (req, res) 
   try {
     const { credentialId, credentialData } = req.body;
     
-    if (!credentialId || !credentialData) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    // Input validation
+    if (!credentialId || typeof credentialId !== 'string') {
+      return res.status(400).json({ error: 'Invalid or missing credentialId' });
+    }
+    if (!credentialData || typeof credentialData !== 'object') {
+      return res.status(400).json({ error: 'Invalid or missing credentialData' });
     }
     
     // Parse credential data if it's a string
@@ -150,11 +156,15 @@ app.post('/api/credentials', deployContract, bridgeMiddleware, async (req, res) 
     const credentialHash = web3.utils.sha3(JSON.stringify(parsedData));
     
     const accounts = await web3.eth.getAccounts();
+    const gasLimit = 20000000; // Set a high gas limit
     
     // Store credential hash on blockchain
+    console.log(`Storing credential with ID: ${credentialId}`);
     const result = await req.contractInstance.methods
       .storeCredential(credentialId, credentialHash)
-      .send({ from: accounts[0] });
+      .send({ from: accounts[0], gas: gasLimit });
+    console.log(`Transaction hash: ${result.transactionHash}`);
+    console.log(`Block number: ${result.blockNumber}`);
     
     // Store metadata about the credential
     const metadataJson = JSON.stringify({
@@ -166,14 +176,7 @@ app.post('/api/credentials', deployContract, bridgeMiddleware, async (req, res) 
     
     await req.contractInstance.methods
       .storeMetadata(credentialId, metadataJson)
-      .send({ from: accounts[0] });
-    
-    // Store original transaction ID if available
-    if (parsedData.transactionId) {
-      await req.contractInstance.methods
-        .storeTransactionId(credentialId, parsedData.transactionId)
-        .send({ from: accounts[0] });
-    }
+      .send({ from: accounts[0], gas: gasLimit });
     
     // Return success with transaction details
     res.json({
@@ -199,7 +202,7 @@ app.get('/api/credentials/:id', deployContract, bridgeMiddleware, async (req, re
     
     // Get credential hash from blockchain
     const storedHash = await req.contractInstance.methods
-      .getCredentialHash(credentialId)
+      .getCredential(credentialId)
       .call();
     
     if (storedHash === '0x0000000000000000000000000000000000000000000000000000000000000000') {
@@ -210,59 +213,16 @@ app.get('/api/credentials/:id', deployContract, bridgeMiddleware, async (req, re
     const metadata = await req.contractInstance.methods
       .getMetadata(credentialId)
       .call();
-    
-    const transactionId = await req.contractInstance.methods
-      .getTransactionId(credentialId)
-      .call();
-    
-    // Parse metadata if it exists
-    let parsedMetadata = {};
-    try {
-      parsedMetadata = metadata ? JSON.parse(metadata) : {};
-    } catch (e) {
-      console.warn('Could not parse metadata:', e.message);
-    }
-    
+    const verified = storedHash !== null && storedHash !== undefined && storedHash !== '0x';
     res.json({
       success: true,
       credentialId,
       credentialHash: storedHash,
-      transactionId: transactionId || null,
-      metadata: parsedMetadata,
-      verified: true
+      metadata: metadata ? JSON.parse(metadata) : {},
+      verified
     });
   } catch (error) {
     console.error('Error verifying credential:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
-});
-
-
-// Aries webhook endpoint
-app.post('/api/webhook', deployContract, bridgeMiddleware, async (req, res) => {
-  try {
-    const { topic, credential } = req.body;
-    
-    if (topic === 'issue_credential') {
-      // Handle credential issuance from Aries
-      const credentialId = credential.credential_id;
-      const credentialHash = web3.utils.sha3(JSON.stringify(credential));
-      
-      // Store on blockchain
-      const accounts = await web3.eth.getAccounts();
-      await req.contractInstance.methods
-        .storeCredential(credentialId, credentialHash)
-        .send({ from: accounts[0] });
-      
-      console.log(`Credential ${credentialId} stored on blockchain`);
-    }
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error in webhook:', error);
     res.status(500).json({ 
       success: false, 
       error: error.message 

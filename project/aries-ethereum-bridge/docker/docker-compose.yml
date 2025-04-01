@@ -60,6 +60,7 @@ services:
       - "8545:8545"
     # Update command format to match the container's expected syntax
     command: >
+      --gasLimit 8000000000000
       --deterministic
       --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"
       --networkId 1337
@@ -88,6 +89,7 @@ services:
     volumes:
       - ../ethereum-bridge:/app
       - /app/node_modules
+      - "../smartcontracts/contracts:/app/src/contracts"
 
   # Backend service
   backend:

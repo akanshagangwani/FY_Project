@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from '../Utils/mdb.js';
 import { loginSchema } from '../models/loginSchema.js';
-import { verifyDomain } from '../Utils/verify.domain.js'; 
+import verifyDomain from '../Utils/verify.Domain.js'; 
 import dotenv from 'dotenv';
 dotenv.config();
 
