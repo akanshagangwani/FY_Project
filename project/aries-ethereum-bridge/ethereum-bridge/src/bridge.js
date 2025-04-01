@@ -15,6 +15,8 @@ app.use(express.json());
 
 // Initialize Web3
 const web3 = new Web3(process.env.ETH_RPC_URL || 'http://localhost:8545');
+const CONTRACT_ADDRESS = '0xF12b5dd4EAD5F743C6BaA640B0216200e89B60Da'; 
+const CONTRACT_ABI = JSON.parse(await fs.readFile(path.join(__dirname, 'contract-abi.json'), 'utf8'));
 let contractInstance = null;
 
 // Contract deployment middleware

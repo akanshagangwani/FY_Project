@@ -13,6 +13,12 @@
         "internalType": "bytes32",
         "name": "credentialHash",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "CredentialStored",
@@ -29,12 +35,18 @@
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "transactionId",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "credentialHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
-    "name": "TransactionLinked",
+    "name": "CredentialUpdated",
     "type": "event"
   },
   {
@@ -45,26 +57,7 @@
         "type": "string"
       }
     ],
-    "name": "credentialExists",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "credentialId",
-        "type": "string"
-      }
-    ],
-    "name": "getCredentialHash",
+    "name": "getCredential",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -102,12 +95,12 @@
         "type": "string"
       }
     ],
-    "name": "getTransactionId",
+    "name": "getTransactionOwner",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "address",
         "name": "",
-        "type": "string"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -157,12 +150,12 @@
         "type": "string"
       },
       {
-        "internalType": "string",
-        "name": "txId",
-        "type": "string"
+        "internalType": "bytes32",
+        "name": "credentialHash",
+        "type": "bytes32"
       }
     ],
-    "name": "storeTransactionId",
+    "name": "updateCredential",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
