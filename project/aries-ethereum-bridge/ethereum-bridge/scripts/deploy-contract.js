@@ -60,7 +60,7 @@ const deploy = async () => {
     });
     
     const gas = await deployTx.estimateGas();
-    const gasLimit = 8000000; // Set a custom gas limit
+    const gasLimit = 8000000000000; // Set a custom gas limit
     const deployedContract = await deployTx.send({
       from: accounts[0],
       gas: Math.min(gas, gasLimit)
