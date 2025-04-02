@@ -8,6 +8,11 @@ import LoginAs from './LoginAs';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import UserInfo from './UserInfo';
+import AdminLoginUser from './AdminLoginUser';
+import Schema from './Schema';
+import Issuance from './Issuance';
+
+
 function App() {
   return (
     <Routes>
@@ -18,6 +23,11 @@ function App() {
       <Route path="/loginInfo" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/userinfo" element={<UserInfo />} />
+      <Route path="/AdminLogin" element={<AdminLoginUser />} />
+      <Route path="/Schema" element={<Schema />} />
+      <Route path="/Issuance" element={<Issuance />} />
+
+
 
 
 

@@ -11,7 +11,9 @@ const UserInfo = () => {
         <h2>Project</h2>
         <nav>
           <ul>
+            <Link to="/"  style={{ textDecoration: 'none' }}>
             <li className="active2">Home</li>
+            </Link>
             <li>Information</li>
             <li>Degrees</li>
           </ul>

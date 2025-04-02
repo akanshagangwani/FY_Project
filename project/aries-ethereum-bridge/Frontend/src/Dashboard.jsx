@@ -9,8 +9,9 @@ const Dashboard = () => {
                 <h2>Project</h2>
                 <nav>
                     <ul>
-                        <li className="active">Home</li>
-                        <li>Course</li>
+                        <Link to="/" style={{ textDecoration: 'none' }}>
+                            <li className="active2">Home</li>
+                        </Link>                        <li>Course</li>
                         <li>Department</li>
                         <li>Year</li>
                         <li>
@@ -19,7 +20,7 @@ const Dashboard = () => {
                     </ul>
                 </nav>
                 <button className="back-button">
-                    <Link to="/loginInfo" style={{textDecoration: 'none'}}>←</Link>
+                    <Link to="/loginInfo" style={{ textDecoration: 'none' }}>←</Link>
                 </button>            </aside>
             <main className="content">
                 <header>

@@ -1,23 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './LoginAs.css';
-import {  useNavigate } from 'react-router-dom';
-import LoginPage from './Login';
-
+import { useNavigate } from 'react-router-dom';
 
 function LoginAs() {
+  const navigate = useNavigate();
+  const [selectedUser, setSelectedUser] = useState('');
 
-    const navigate = useNavigate();
-    const handleLogin = () => {
-        navigate('/loginInfo');
-      };
+  const handleLogin = () => {
+    if (selectedUser === 'User') {
+      navigate('/loginInfo');
+    } else if (selectedUser === 'Admin') {
+      navigate('/AdminLogin');
+    }
+  };
+
+  const handleUserChange = (event) => {
+    setSelectedUser(event.target.value);
+  };
+
   return (
-
-    
     <div className="login-container1">
+      <div className="login-wrapper">
       <div className="background1">
         <div className="circle1 top-right1"></div>
         <div className="circle1 bottom-left1"></div>
       </div>
+      </div>
+      
 
       <div className="login-box1">
         <div className="logo1">
@@ -30,17 +39,16 @@ function LoginAs() {
             <label>Login as</label>
           </div>
 
-          <select className="dropdown1">
-            <option>Select</option>
-            <option>User</option>
-            <option>Admin</option>
+          <select className="dropdown1" value={selectedUser} onChange={handleUserChange}>
+            <option value="">Select</option>
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
           </select>
 
           <button className="login-btn1" onClick={handleLogin}>Login</button>
         </div>
       </div>
     </div>
-    
   );
 };
 
