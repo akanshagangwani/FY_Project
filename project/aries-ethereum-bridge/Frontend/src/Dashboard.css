@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .dashboard {
+    display: flex;
+    height: 100vh;
+    margin-right: 800px;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background: #d9b3ff;
+    padding: 20px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* .sidebar h2 {
+    font-size: 20px;
+    font-weight: bold;
+  } */
+  
+  nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  nav ul li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  nav ul .active {
+    font-weight: bold;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    color: rgb(0, 0, 0); /* default color */
+  }
+  
+  .back-button:hover {
+    color: rgb(134, 27, 233); /* color on hover */
+  }
+  
+  .content {
+    flex: 1;
+    padding: 30px;
+    background: white;
+  }
+  
+  header {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  /* .home-section h1 {
+    font-size: 32px;
+    font-weight: bold;
+  } */
+  
+  .welcome {
+    color: blueviolet;
+    font-weight: bold;
+  }
+  
+  .user-info {
+    display: flex;
+    /* align-items: center; */
+    margin-top: 30px;
+  }
+  
+  .user-profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .registration {
+    font-size: 14px;
+    margin-top: 100px;
+  }
+  
+  .eye-icon {
+    cursor: pointer;
+  }
+  
+  .verified-results {
+    margin-top: 20px;
+  }
+  
+  .verified-results h4 {
+    color: blueviolet;
+  }
+  
