@@ -69,8 +69,13 @@ export const issueCredential = async (req, res, next) => {
     }
     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const credential = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
     res.status(201).json(credential);
+=======
+    const result = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
+    res.status(201).json(result);
+>>>>>>> Stashed changes
 =======
     const result = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
     res.status(201).json(result);

@@ -1,5 +1,6 @@
 import academicService from '../services/academic.service.js';
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 // Create academic schema
 export const createAcademicSchema = async (req, res, next) => {
@@ -28,6 +29,8 @@ export const createAcademicCredentialDefinition = async (req, res, next) => {
 };
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
 // Issue academic credential
 export const issueAcademicCredential = async (req, res, next) => {
@@ -53,12 +56,15 @@ export const issueAcademicCredential = async (req, res, next) => {
     }
     
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const credential = await academicService.issueAcademicCredential(
       credentialDefinitionId,
       studentData,
       connectionId
     );
 =======
+=======
+>>>>>>> Stashed changes
     // Issue credential using academic service
     const result = await academicService.issueCredential({
       connectionId,
@@ -126,11 +132,46 @@ export const getAcademicCredentialDetails = async (req, res, next) => {
       });
     }
     
+<<<<<<< Updated upstream
     // Get credential details using academic service
     const result = await academicService.getCredentialDetails(credentialId);
     
     res.json({
       success: true,
+=======
+    // Verify credential using academic service
+    const result = await academicService.verifyCredential(credentialId);
+    
+    res.json({
+      success: true,
+      verified: result.verified,
+      credential: result.credential,
+      blockchainStatus: result.blockchainStatus
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get academic credential details
+export const getAcademicCredentialDetails = async (req, res, next) => {
+  try {
+    const { credentialId } = req.params;
+    
+    if (!credentialId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Credential ID is required' 
+      });
+    }
+    
+    // Get credential details using academic service
+    const result = await academicService.getCredentialDetails(credentialId);
+    
+    res.json({
+      success: true,
+>>>>>>> Stashed changes
       data: result
     });
     
