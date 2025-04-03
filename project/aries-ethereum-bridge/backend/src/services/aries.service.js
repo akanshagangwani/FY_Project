@@ -4,12 +4,19 @@ import bridgeService from './bridge.service.js';
 
 class AriesService {
   constructor() {
+    console.log('Initializing Aries service with URL:', config.ARIES_ADMIN_URL);
     this.apiClient = axios.create({
       baseURL: config.ARIES_ADMIN_URL,
       timeout: 30000,
       headers: config.ARIES_ADMIN_API_KEY 
         ? { 'X-API-Key': config.ARIES_ADMIN_API_KEY }
         : {}
+    });
+
+    console.log('Aries API Client Configuration:', {
+      baseURL: this.apiClient.defaults.baseURL,
+      timeout: this.apiClient.defaults.timeout,
+      hasApiKey: !!config.ARIES_ADMIN_API_KEY
     });
   }
 
