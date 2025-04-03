@@ -39,11 +39,10 @@ services:
       - ACAPY_LOG_LEVEL=info
       - ACAPY_GENESIS_URL=http://dev.greenlight.bcovrin.vonx.io/genesis
     healthcheck:
-        test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8031/status/ready", "-O", "/dev/null", "||", "exit", "1"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
-        start_period: 30s
+      test: ["CMD", "nc", "-z", "localhost", "8031"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - aries-network
     depends_on:
