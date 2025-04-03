@@ -62,99 +62,67 @@ class AriesService {
   }
 
   // Check agent status
-  // async getStatus() {
-  //   try {
-  //     console.log('Checking Aries agent status at base URL:', this.apiClient.defaults.baseURL);
-  //     const response = await this.apiClient.get('/status');
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Error getting agent status:', error.response?.data || error.message);
-  //     throw error;
-  //   }
-  // }
-
-  // Check agent status
-async getStatus() {
-  try {
-    console.log('Checking Aries agent status at base URL:', this.apiClient.defaults.baseURL);
-    
-    // Try common Aries status endpoints
-    const possibleEndpoints = [
-      '/status',
-      '/',
-      '/status/ready',
-      '/status/live'
-    ];
-    
-    let lastError = null;
-    
-    // Try each endpoint until one works
-    for (const endpoint of possibleEndpoints) {
-      try {
-        console.log(`Attempting to connect to endpoint: ${endpoint}`);
-        const response = await this.apiClient.get(endpoint, { timeout: 5000 }); // Shorter timeout for faster testing
-        console.log(`Successfully connected to ${endpoint}`);
-        return {
-          status: 'active',
-          message: `Connected via endpoint: ${endpoint}`,
-          data: response.data
-        };
-      } catch (error) {
-        console.log(`Failed to connect to ${endpoint}:`, error.message);
-        lastError = error;
-        // Continue to next endpoint
-      }
-    }
-    
-    // If we get here, all attempts failed
-    throw new Error(`Failed to connect to Aries agent. Last error: ${lastError.message}`);
-  } catch (error) {
-    console.error('Error getting agent status:', error.message);
-    // For debugging, log the complete error object
-    console.error('Full error object:', JSON.stringify({
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    }));
-    throw error;
-  }
-}
-
-
-
-  async issueCredential(credDefId, attributes, connectionId) {
+  async getStatus() {
     try {
-      // Format attributes properly for Aries
-      const formattedAttributes = Array.isArray(attributes)
-        ? attributes
-        : Object.entries(attributes).map(([name, value]) => ({ name, value }));
-  
-      const credential = {
-        auto_remove: false,
-        credential_definition_id: credDefId,
-        credential_proposal: {
-          "@type": "issue-credential/1.0/credential-preview",
-          attributes: formattedAttributes
-        },
-        connection_id: connectionId,
-        trace: true
-      };
-  
-      // Issue credential through Aries
-      const response = await this.apiClient.post('/issue-credential/send', credential);
-  
-      // Store the Verifiable Credential (VC) on the blockchain
-      const blockchainResponse = await bridgeService.storeCredential(
-        response.data.credential_exchange_id,
-        response.data
-      );
-  
-      return {
-        ...response.data,
-        blockchain: blockchainResponse
-      };
+      console.log('Checking Aries agent status at base URL:', this.apiClient.defaults.baseURL);
+      
+      // Try common Aries status endpoints
+      const possibleEndpoints = [
+        '/status',
+        '/',
+        '/status/ready',
+        '/status/live'
+      ];
+      
+      let lastError = null;
+      
+      // Try each endpoint until one works
+      for (const endpoint of possibleEndpoints) {
+        try {
+          console.log(`Attempting to connect to endpoint: ${endpoint}`);
+          const response = await this.apiClient.get(endpoint, { timeout: 5000 }); // Shorter timeout for faster testing
+          console.log(`Successfully connected to ${endpoint}`);
+          return {
+            status: 'active',
+            message: `Connected via endpoint: ${endpoint}`,
+            data: response.data
+          };
+        } catch (error) {
+          console.log(`Failed to connect to ${endpoint}:`, error.message);
+          lastError = error;
+        }
+      }
+      
+      // If we get here, all endpoints failed
+      throw lastError || new Error('All status endpoints failed');
+    } catch (error) {
+      console.error('Error getting agent status:', error);
+      throw error;
+    }
+  }
+
+  // Issue credential
+  async issueCredential(credentialDefinitionId, attributes, connectionId) {
+    try {
+      const response = await this.apiClient.post('/issue-credential/send', {
+        credential_definition_id: credentialDefinitionId,
+        attributes: attributes,
+        connection_id: connectionId
+      });
+      return response.data;
     } catch (error) {
       console.error('Error issuing credential:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
+  // Get credentials
+  async getCredentials() {
+    try {
+      const response = await this.apiClient.get('/issue-credential/records');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching credentials:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -203,10 +171,7 @@ async getStatus() {
       throw error;
     }
   }
-
 }
-
-
 
 const ariesService = new AriesService();
 export default ariesService;

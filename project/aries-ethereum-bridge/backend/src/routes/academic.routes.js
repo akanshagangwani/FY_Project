@@ -1,9 +1,15 @@
 import express from 'express';
 import { 
+<<<<<<< Updated upstream
   createAcademicSchema,
   createAcademicCredentialDefinition,
   issueAcademicCredential,
   verifyAcademicCredential
+=======
+  issueAcademicCredential, 
+  verifyAcademicCredential,
+  getAcademicCredentialDetails 
+>>>>>>> Stashed changes
 } from '../controllers/academic.controller.js';
 import authenticate from '../middleware/authenticate.js';
 import validate from '../middleware/validate.js';
@@ -137,6 +143,67 @@ router.get(
   authenticate,
   validate(academicValidation.verifyCredential),
   verifyAcademicCredential
+);
+
+/**
+ * @swagger
+ * /academic/details/{credentialId}:
+ *   get:
+ *     summary: Get academic credential details
+ *     tags: [Academic]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: credentialId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the credential to get details for
+ *     responses:
+ *       200:
+ *         description: Credential details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     student_name:
+ *                       type: string
+ *                     student_id:
+ *                       type: string
+ *                     degree:
+ *                       type: string
+ *                     graduation_date:
+ *                       type: string
+ *                     institution:
+ *                       type: string
+ *                     courses:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     gpa:
+ *                       type: string
+ *                     verified:
+ *                       type: boolean
+ *                     blockchainStatus:
+ *                       type: object
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Credential not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/details/:credentialId', 
+  authenticate, 
+  validate(academicValidation.verifyAcademicCredential),
+  getAcademicCredentialDetails
 );
 
 export default router;
