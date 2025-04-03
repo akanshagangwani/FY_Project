@@ -1,27 +1,104 @@
 import express from 'express';
 import { 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
   createAcademicSchema,
   createAcademicCredentialDefinition,
   issueAcademicCredential,
-  verifyAcademicCredential
-=======
-  issueAcademicCredential, 
   verifyAcademicCredential,
-  getAcademicCredentialDetails 
->>>>>>> Stashed changes
-=======
-  issueAcademicCredential, 
-  verifyAcademicCredential,
-  getAcademicCredentialDetails 
->>>>>>> Stashed changes
+  getAcademicCredentialDetails
 } from '../controllers/academic.controller.js';
 import authenticate from '../middleware/authenticate.js';
 import validate from '../middleware/validate.js';
-import * as academicValidation from '../validation/academic.validation.js';
+import { 
+  createSchema,
+  createCredentialDefinition,
+  issueCredential,
+  verifyCredential,
+  getCredentialDetails
+} from '../validation/academic.validation.js';
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AcademicCredential:
+ *       type: object
+ *       required:
+ *         - studentName
+ *         - studentId
+ *         - degree
+ *         - graduationDate
+ *         - institution
+ *         - gpa
+ *       properties:
+ *         studentName:
+ *           type: string
+ *         studentId:
+ *           type: string
+ *         degree:
+ *           type: string
+ *         graduationDate:
+ *           type: string
+ *         institution:
+ *           type: string
+ *         courses:
+ *           type: array
+ *           items:
+ *             type: string
+ *         gpa:
+ *           type: string
+ *     CredentialDefinition:
+ *       type: object
+ *       required:
+ *         - schemaId
+ *       properties:
+ *         schemaId:
+ *           type: string
+ *     IssueCredential:
+ *       type: object
+ *       required:
+ *         - credentialDefinitionId
+ *         - connectionId
+ *         - studentName
+ *         - studentId
+ *         - degree
+ *         - graduationDate
+ *         - institution
+ *         - gpa
+ *       properties:
+ *         credentialDefinitionId:
+ *           type: string
+ *         connectionId:
+ *           type: string
+ *         studentName:
+ *           type: string
+ *         studentId:
+ *           type: string
+ *         degree:
+ *           type: string
+ *         graduationDate:
+ *           type: string
+ *         institution:
+ *           type: string
+ *         courses:
+ *           type: array
+ *           items:
+ *             type: string
+ *         gpa:
+ *           type: string
+ *     VerificationResult:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         verified:
+ *           type: boolean
+ *         credential:
+ *           $ref: '#/components/schemas/AcademicCredential'
+ *         blockchainStatus:
+ *           type: object
+ */
 
 /**
  * @swagger
@@ -34,10 +111,21 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Academic schema created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 schemaId:
+ *                   type: string
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.post('/schema', authenticate, validate(academicValidation.createSchema), createAcademicSchema);
+router.post('/schema', authenticate, validate(createSchema), createAcademicSchema);
 
 /**
  * @swagger
@@ -52,22 +140,28 @@ router.post('/schema', authenticate, validate(academicValidation.createSchema), 
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - schemaId
- *             properties:
- *               schemaId:
- *                 type: string
+ *             $ref: '#/components/schemas/CredentialDefinition'
  *     responses:
  *       201:
  *         description: Academic credential definition created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 credentialDefinitionId:
+ *                   type: string
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post(
   '/credential-definition',
   authenticate,
-  validate(academicValidation.createCredentialDefinition),
+  validate(createCredentialDefinition),
   createAcademicCredentialDefinition
 );
 
@@ -84,43 +178,34 @@ router.post(
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - credentialDefinitionId
- *               - studentData
- *               - connectionId
- *             properties:
- *               credentialDefinitionId:
- *                 type: string
- *               studentData:
- *                 type: object
- *                 properties:
- *                   studentId:
- *                     type: string
- *                   name:
- *                     type: string
- *                   degree:
- *                     type: string
- *                   institution:
- *                     type: string
- *                   year:
- *                     type: string
- *                   gpa:
- *                     type: string
- *                   major:
- *                     type: string
- *               connectionId:
- *                 type: string
+ *             $ref: '#/components/schemas/IssueCredential'
  *     responses:
  *       201:
  *         description: Academic credential issued successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 credentialId:
+ *                   type: string
+ *                 blockchain:
+ *                   type: object
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post(
   '/issue',
   authenticate,
-  validate(academicValidation.issueCredential),
+  validate(issueCredential),
   issueAcademicCredential
 );
 
@@ -141,13 +226,21 @@ router.post(
  *     responses:
  *       200:
  *         description: Academic credential verification result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VerificationResult'
  *       401:
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get(
   '/verify/:credentialId',
   authenticate,
-  validate(academicValidation.verifyCredential),
+  validate(verifyCredential),
   verifyAcademicCredential
 );
 
@@ -165,10 +258,9 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the credential to get details for
  *     responses:
  *       200:
- *         description: Credential details retrieved successfully
+ *         description: Academic credential details
  *         content:
  *           application/json:
  *             schema:
@@ -177,99 +269,18 @@ router.get(
  *                 success:
  *                   type: boolean
  *                 data:
- *                   type: object
- *                   properties:
- *                     student_name:
- *                       type: string
- *                     student_id:
- *                       type: string
- *                     degree:
- *                       type: string
- *                     graduation_date:
- *                       type: string
- *                     institution:
- *                       type: string
- *                     courses:
- *                       type: array
- *                       items:
- *                         type: string
- *                     gpa:
- *                       type: string
- *                     verified:
- *                       type: boolean
- *                     blockchainStatus:
- *                       type: object
+ *                   $ref: '#/components/schemas/AcademicCredential'
  *       401:
  *         description: Unauthorized
- *       404:
- *         description: Credential not found
- *       500:
- *         description: Server error
- */
-router.get('/details/:credentialId', 
-  authenticate, 
-  validate(academicValidation.verifyAcademicCredential),
-  getAcademicCredentialDetails
-);
-
-/**
- * @swagger
- * /academic/details/{credentialId}:
- *   get:
- *     summary: Get academic credential details
- *     tags: [Academic]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: credentialId
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the credential to get details for
- *     responses:
- *       200:
- *         description: Credential details retrieved successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: object
- *                   properties:
- *                     student_name:
- *                       type: string
- *                     student_id:
- *                       type: string
- *                     degree:
- *                       type: string
- *                     graduation_date:
- *                       type: string
- *                     institution:
- *                       type: string
- *                     courses:
- *                       type: array
- *                       items:
- *                         type: string
- *                     gpa:
- *                       type: string
- *                     verified:
- *                       type: boolean
- *                     blockchainStatus:
- *                       type: object
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Credential not found
- *       500:
- *         description: Server error
+ *               $ref: '#/components/schemas/Error'
  */
-router.get('/details/:credentialId', 
-  authenticate, 
-  validate(academicValidation.verifyAcademicCredential),
+router.get(
+  '/details/:credentialId',
+  authenticate,
+  validate(getCredentialDetails),
   getAcademicCredentialDetails
 );
 

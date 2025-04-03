@@ -68,18 +68,8 @@ export const issueCredential = async (req, res, next) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
     
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    const credential = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
-    res.status(201).json(credential);
-=======
     const result = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
     res.status(201).json(result);
->>>>>>> Stashed changes
-=======
-    const result = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
-    res.status(201).json(result);
->>>>>>> Stashed changes
   } catch (error) {
     next(error);
   }
