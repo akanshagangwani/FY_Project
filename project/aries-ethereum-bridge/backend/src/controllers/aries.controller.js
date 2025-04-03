@@ -1,17 +1,5 @@
 import ariesService from '../services/aries.service.js';
 
-// Get agent status
-// export const getStatus = async (req, res, next) => {
-//   try {
-//     const status = await ariesService.getStatus();
-//     res.status(200).json(status);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-
-// Get agent status
 export const getStatus = async (req, res, next) => {
   try {
     console.log('Received request for agent status');
