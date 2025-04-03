@@ -1,16 +1,37 @@
 import express from 'express';
-import { issueAcademicCredential, verifyAcademicCredential } from '../controllers/academic.controller.js';
+import { 
+  createAcademicSchema,
+  createAcademicCredentialDefinition,
+  issueAcademicCredential,
+  verifyAcademicCredential
+} from '../controllers/academic.controller.js';
 import authenticate from '../middleware/authenticate.js';
 import validate from '../middleware/validate.js';
-import academicValidation from '../validation/academic.validation.js';
+import * as academicValidation from '../validation/academic.validation.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /academic/issue:
+ * /academic/schema:
  *   post:
- *     summary: Issue an academic credential
+ *     summary: Create academic credential schema
+ *     tags: [Academic]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Academic schema created successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/schema', authenticate, validate(academicValidation.createSchema), createAcademicSchema);
+
+/**
+ * @swagger
+ * /academic/credential-definition:
+ *   post:
+ *     summary: Create academic credential definition
  *     tags: [Academic]
  *     security:
  *       - bearerAuth: []
@@ -21,60 +42,73 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - connectionId
- *               - studentName
- *               - studentId
- *               - degree
- *               - institution
+ *               - schemaId
  *             properties:
- *               connectionId:
+ *               schemaId:
  *                 type: string
- *                 description: Connection ID for the credential recipient
- *               studentName:
- *                 type: string
- *                 minLength: 2
- *                 maxLength: 100
- *                 description: Full name of the student
- *               studentId:
- *                 type: string
- *                 description: Unique student identifier
- *               degree:
- *                 type: string
- *                 minLength: 2
- *                 maxLength: 100
- *                 description: Degree earned
- *               graduationDate:
- *                 type: string
- *                 format: date
- *                 description: Date of graduation
- *               institution:
- *                 type: string
- *                 minLength: 2
- *                 maxLength: 200
- *                 description: Name of the educational institution
- *               courses:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: List of completed courses
- *               gpa:
- *                 type: number
- *                 minimum: 0
- *                 maximum: 4
- *                 description: Grade Point Average
  *     responses:
  *       201:
- *         description: Credential issued successfully
- *       400:
- *         description: Invalid input data
+ *         description: Academic credential definition created successfully
  *       401:
  *         description: Unauthorized
- *       500:
- *         description: Server error
  */
-router.post('/issue', 
-  authenticate, 
-  validate(academicValidation.issueAcademicCredential),
+router.post(
+  '/credential-definition',
+  authenticate,
+  validate(academicValidation.createCredentialDefinition),
+  createAcademicCredentialDefinition
+);
+
+/**
+ * @swagger
+ * /academic/issue:
+ *   post:
+ *     summary: Issue academic credential
+ *     tags: [Academic]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - credentialDefinitionId
+ *               - studentData
+ *               - connectionId
+ *             properties:
+ *               credentialDefinitionId:
+ *                 type: string
+ *               studentData:
+ *                 type: object
+ *                 properties:
+ *                   studentId:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   degree:
+ *                     type: string
+ *                   institution:
+ *                     type: string
+ *                   year:
+ *                     type: string
+ *                   gpa:
+ *                     type: string
+ *                   major:
+ *                     type: string
+ *               connectionId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Academic credential issued successfully
+ *       401:
+ *         description: Unauthorized
+ */
+router.post(
+  '/issue',
+  authenticate,
+  validate(academicValidation.issueCredential),
   issueAcademicCredential
 );
 
@@ -82,7 +116,7 @@ router.post('/issue',
  * @swagger
  * /academic/verify/{credentialId}:
  *   get:
- *     summary: Verify an academic credential
+ *     summary: Verify academic credential
  *     tags: [Academic]
  *     security:
  *       - bearerAuth: []
@@ -92,20 +126,16 @@ router.post('/issue',
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the credential to verify
  *     responses:
  *       200:
- *         description: Credential verification result
+ *         description: Academic credential verification result
  *       401:
  *         description: Unauthorized
- *       404:
- *         description: Credential not found
- *       500:
- *         description: Server error
  */
-router.get('/verify/:credentialId', 
-  authenticate, 
-  validate(academicValidation.verifyAcademicCredential),
+router.get(
+  '/verify/:credentialId',
+  authenticate,
+  validate(academicValidation.verifyCredential),
   verifyAcademicCredential
 );
 

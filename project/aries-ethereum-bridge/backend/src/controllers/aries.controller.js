@@ -58,3 +58,29 @@ export const createCredentialDefinition = async (req, res, next) => {
     next(error);
   }
 };
+
+// Issue credential
+export const issueCredential = async (req, res, next) => {
+  try {
+    const { credentialDefinitionId, attributes, connectionId } = req.body;
+    
+    if (!credentialDefinitionId || !attributes || !connectionId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    
+    const credential = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
+    res.status(201).json(credential);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get credentials
+export const getCredentials = async (req, res, next) => {
+  try {
+    const credentials = await ariesService.getCredentials();
+    res.status(200).json(credentials);
+  } catch (error) {
+    next(error);
+  }
+};
