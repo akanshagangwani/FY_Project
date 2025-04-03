@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./UserInfo.css";
+import "./Schema.css";
 import { Link } from 'react-router-dom';
 
 const Schema = () => {

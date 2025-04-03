@@ -1,53 +1,60 @@
 import React from "react";
+import { FaUser } from "react-icons/fa";
 import "./Dashboard.css";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
 const Dashboard = () => {
-    return (
-        <div className="dashboard">
-            <aside className="sidebar">
-                <h2>Project</h2>
-                <nav>
-                    <ul>
-                        <Link to="/" style={{ textDecoration: 'none' }}>
-                            <li className="active2">Home</li>
-                        </Link>                        <li>Course</li>
-                        <li>Department</li>
-                        <li>Year</li>
-                        <li>
-                            <Link to="/userinfo" style={{ textDecoration: 'none' }}>User  info</Link>
-                        </li>
-                    </ul>
-                </nav>
-                <button className="back-button">
-                    <Link to="/loginInfo" style={{ textDecoration: 'none' }}>←</Link>
-                </button>            </aside>
-            <main className="content">
-                <header>
-                    <img src="profile-pic-url" alt="User" className="profile-pic" />
-                </header>
-                <section className="home-section">
-                    <h1>Home</h1>
-                    <p className="welcome">Welcome</p>
-                    <div className="user-info">
-                        <img
-                            src="user-image-url"
-                            alt="User"
-                            className="user-profile-pic"
-                        />
-                        <h3>AKANSHA KANHAIYA GANGWANI</h3>
-                        {/* <p className="registration" style={{ textAlign: "left" }}>
-                            {" "}Your Registration No. : xxxxxxxxxxxxxxxxxxx<span className="eye-icon">👁️‍🗨️</span>
-                        </p> */}
-                    </div>
-                    <div className="verified-results">
-                        <h4>Verified Results/Degrees</h4>
-                        <p>1. Bachelors in Technology 2025</p>
-                    </div>
-                </section>
-            </main>
+  return (
+    <div className="home-container">
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="logo-section">
+          <img
+            src="/logo.png" // Replace with actual logo
+            alt="Credex Logo"
+            className="logo"
+          />
+          <Link to="/" style={{textDecoration:"none"}}>
+          <span className="brand">Credex</span>
+          </Link>
         </div>
-    );
+        <div className="nav-links">
+          <a href="/dashboard" className="active-link">Home</a>
+          <a href="/UserInfo">Information</a>
+          <a href="#">Certificates</a>
+        </div>
+        <FaUser className="user-icon" />
+      </nav>
+
+      {/* Main Content */}
+      <div className="content-container">
+        <div className="content-box">
+          <div className="background-overlay"></div>
+          <h1 className="title">Home</h1>
+          <p className="welcome">Welcome</p>
+          <div className="profile-section">
+            <img
+              src="/gangwani.png" // Replace with actual profile image
+              alt="User Profile"
+              className="profile-pic"
+            />
+            <span className="profile-name">AKANSHA KANHAIYA GANGWANI</span>
+            <br></br>
+            <br></br>
+          </div>
+          <p className="registration">Your Registration No.: <span className="reg-number">xxxxxxxxxxxxxxxx</span></p>
+          <p className="degree-title">Verified Results/Degrees</p>
+          <p className="degree-info">1. Bachelors in Technology 2025</p>
+        </div>
+        <div className="logo-center">
+          <img
+            src="/logo.png" // Replace with actual logo
+            alt="Credex Logo"
+            className="centerlogo"
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;

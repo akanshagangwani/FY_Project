@@ -62,7 +62,7 @@ function LoginPage() {
 
       <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
-          <h1 className="heading">Degree Verification</h1>
+          <h1 className="heading">Credex</h1>
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
