@@ -1,12 +1,19 @@
 import ariesService from '../services/aries.service.js';
 
-// Get agent status
 export const getStatus = async (req, res, next) => {
   try {
+    console.log('Received request for agent status');
     const status = await ariesService.getStatus();
+    console.log('Status retrieved successfully:', status);
     res.status(200).json(status);
   } catch (error) {
-    next(error);
+    console.error('Controller error in getStatus:', error.message);
+    // Send a more informative error response
+    res.status(503).json({
+      error: 'Service unavailable',
+      message: `Cannot connect to Aries agent: ${error.message}`,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 
@@ -47,6 +54,32 @@ export const createCredentialDefinition = async (req, res, next) => {
     
     const credentialDefinition = await ariesService.createCredentialDefinition(schemaId, tag);
     res.status(201).json(credentialDefinition);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Issue credential
+export const issueCredential = async (req, res, next) => {
+  try {
+    const { credentialDefinitionId, attributes, connectionId } = req.body;
+    
+    if (!credentialDefinitionId || !attributes || !connectionId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    
+    const result = await ariesService.issueCredential(credentialDefinitionId, attributes, connectionId);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get credentials
+export const getCredentials = async (req, res, next) => {
+  try {
+    const credentials = await ariesService.getCredentials();
+    res.status(200).json(credentials);
   } catch (error) {
     next(error);
   }

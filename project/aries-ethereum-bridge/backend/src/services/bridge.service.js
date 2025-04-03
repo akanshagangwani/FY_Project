@@ -19,13 +19,17 @@ class BridgeService {
    * @param {object} credentialData - The credential data to hash and store
    * @returns {Promise<object>} Blockchain transaction details
    */
-  async storeCredential(credentialId, credentialData) {
+  async storeCredential(credentialId, verifiableCredential) {
     try {
+      // Hash the entire Verifiable Credential (VC)
+      const credentialHash = web3.utils.sha3(JSON.stringify(verifiableCredential));
+  
+      // Store the hash on the blockchain
       const response = await this.apiClient.post('/api/credentials', {
         credentialId,
-        credentialData: JSON.stringify(credentialData)
+        credentialHash
       });
-      
+  
       return response.data;
     } catch (error) {
       console.error('Error storing credential on blockchain:', error.response?.data || error.message);
@@ -75,6 +79,25 @@ class BridgeService {
       throw error;
     }
   }
+
+// async sendToMetaMask(studentAddress, credentialHash, transactionHash) {
+//   try {
+//     const accounts = await web3.eth.requestAccounts();
+
+//     // Send transaction to student's MetaMask wallet
+//     const transaction = await web3.eth.sendTransaction({
+//       from: accounts[0],
+//       to: studentAddress,
+//       value: web3.utils.toWei('0.01', 'ether'), // Optional: Send some ETH
+//       data: web3.utils.asciiToHex(`Credential Hash: ${credentialHash}, TxHash: ${transactionHash}`)
+//     });
+
+//     return transaction;
+//   } catch (error) {
+//     console.error('Error sending data to MetaMask:', error.message);
+//     throw error;
+//   }
+// }
 }
 
 const bridgeService = new BridgeService();

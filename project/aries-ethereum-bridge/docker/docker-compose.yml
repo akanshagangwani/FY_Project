@@ -11,7 +11,7 @@ services:
       start
         --admin 0.0.0.0 8031
         --admin-api-key adminkey
-        --endpoint http://host.docker.internal:8030
+        --endpoint http://aries-agent:8030
         --inbound-transport http 0.0.0.0 8030
         --outbound-transport http
         --label "Academic Credentials Issuer"
@@ -25,7 +25,7 @@ services:
         --genesis-url http://dev.greenlight.bcovrin.vonx.io/genesis
         --log-level info
     environment:
-      - ACAPY_ENDPOINT=http://host.docker.internal:8030
+      - ACAPY_ENDPOINT=http://aries-agent:8030
       - ACAPY_LABEL=Academic Credentials Issuer
       - ACAPY_ADMIN_API_KEY=adminkey
       - ACAPY_ADMIN=0.0.0.0 8031
@@ -38,6 +38,11 @@ services:
       - ACAPY_AUTO_PROVISION=true
       - ACAPY_LOG_LEVEL=info
       - ACAPY_GENESIS_URL=http://dev.greenlight.bcovrin.vonx.io/genesis
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8031"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - aries-network
     depends_on:
@@ -103,11 +108,14 @@ services:
       - ARIES_ADMIN_URL=http://aries-agent:8031
       - ARIES_ADMIN_API_KEY=adminkey
       - BRIDGE_URL=http://ethereum-bridge:3000
+      - DEBUG=true
     networks:
       - aries-network
     depends_on:
-      - aries-agent
-      - ethereum-bridge
+      aries-agent:
+        condition: service_healthy
+      ethereum-bridge:
+        condition: service_started
     volumes:
       - /app/node_modules
 

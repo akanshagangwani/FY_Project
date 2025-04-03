@@ -1,5 +1,30 @@
-import ariesService from '../services/aries.service.js';
-import bridgeService from '../services/bridge.service.js';
+import academicService from '../services/academic.service.js';
+
+// Create academic schema
+export const createAcademicSchema = async (req, res, next) => {
+  try {
+    const schema = await academicService.createAcademicSchema();
+    res.status(201).json(schema);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Create academic credential definition
+export const createAcademicCredentialDefinition = async (req, res, next) => {
+  try {
+    const { schemaId } = req.body;
+    
+    if (!schemaId) {
+      return res.status(400).json({ message: 'Schema ID is required' });
+    }
+    
+    const credentialDefinition = await academicService.createAcademicCredentialDefinition(schemaId);
+    res.status(201).json(credentialDefinition);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Issue academic credential
 export const issueAcademicCredential = async (req, res, next) => {
@@ -12,57 +37,33 @@ export const issueAcademicCredential = async (req, res, next) => {
       graduationDate, 
       institution,
       courses = [],
-      gpa
+      gpa,
+      credentialDefinitionId
     } = req.body;
     
-    // Validate required fields
-    if (!connectionId || !studentName || !studentId || !degree || !institution) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields' 
-      });
+    if (!credentialDefinitionId || !connectionId || !studentName || !studentId || !degree || !graduationDate || !institution || !gpa) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
     
-    // First, ensure we have a credential definition
-    let credDefId = req.body.credentialDefinitionId;
-    
-    if (!credDefId) {
-      // Create schema if needed
-      const schemaResponse = await ariesService.createSchema(
-        'academic_credentials',
-        '1.0',
-        ['student_name', 'student_id', 'degree', 'graduation_date', 'institution', 'courses', 'gpa']
-      );
-      
-      // Create credential definition
-      const credDefResponse = await ariesService.createCredentialDefinition(
-        schemaResponse.schema_id
-      );
-      
-      credDefId = credDefResponse.credential_definition_id;
-    }
-    
-    // Format attributes for credential
-    const attributes = [
-      { name: "student_name", value: studentName },
-      { name: "student_id", value: studentId },
-      { name: "degree", value: degree },
-      { name: "graduation_date", value: graduationDate || new Date().toISOString() },
-      { name: "institution", value: institution },
-      { name: "courses", value: JSON.stringify(courses) },
-      { name: "gpa", value: gpa ? gpa.toString() : "0.0" }
-    ];
-    
-    // Issue credential (this will also store on blockchain via the updated service)
-    const result = await ariesService.issueCredential(credDefId, attributes, connectionId);
+    // Issue credential using academic service
+    const result = await academicService.issueCredential({
+      connectionId,
+      studentName,
+      studentId,
+      degree,
+      graduationDate,
+      institution,
+      courses,
+      gpa,
+      credentialDefinitionId
+    });
     
     res.status(201).json({
       success: true,
       message: 'Academic credential issued successfully',
-      credentialId: result.credential_exchange_id,
+      credentialId: result.credentialId,
       blockchain: result.blockchain
     });
-    
   } catch (error) {
     next(error);
   }
@@ -74,22 +75,42 @@ export const verifyAcademicCredential = async (req, res, next) => {
     const { credentialId } = req.params;
     
     if (!credentialId) {
+      return res.status(400).json({ message: 'Credential ID is required' });
+    }
+    
+    // Verify credential using academic service
+    const result = await academicService.verifyCredential(credentialId);
+    
+    res.json({
+      success: true,
+      verified: result.verified,
+      credential: result.credential,
+      blockchainStatus: result.blockchainStatus
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get academic credential details
+export const getAcademicCredentialDetails = async (req, res, next) => {
+  try {
+    const { credentialId } = req.params;
+    
+    if (!credentialId) {
       return res.status(400).json({ 
         success: false, 
         message: 'Credential ID is required' 
       });
     }
     
-    // Get credential with verification
-    const result = await ariesService.getCredentialWithVerification(credentialId);
+    // Get credential details using academic service
+    const result = await academicService.getCredentialDetails(credentialId);
     
     res.json({
       success: true,
-      verified: result.verification?.verified || false,
-      credential: result,
-      blockchainStatus: result.verification?.blockchain || null
+      data: result
     });
-    
   } catch (error) {
     next(error);
   }
