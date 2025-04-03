@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './Login.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,6 +19,11 @@ function LoginPage() {
   const handleLogin = async (event) => {
     event.preventDefault();
 
+    if (!email || !password) {
+      toast.error('Please fill in both fields.');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3001/sonalimkc/auth/login', {
         method: 'POST',
@@ -28,13 +35,13 @@ function LoginPage() {
       const data = await response.json();
       
       if (response.ok) {
-        console.log("Login Successful", data);
+        toast.success('Login Successful!');
         navigate('/dashboard');
       } else {
-        console.error("Login Failed", data);
+        toast.error(data.message || 'Login Failed. Please try again.');
       }
     } catch (error) {
-      console.error(error);
+      toast.error('Something went wrong. Please try again later.');
     }
   };
 
@@ -47,6 +54,7 @@ function LoginPage() {
 
   return (
     <div className={`login-container ${animate ? 'animated' : 'initial'}`}>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="background">
         <div className={`circle top-right ${animate ? '' : 'initial'}`}></div>
         <div className={`circle bottom-left ${animate ? '' : 'initial'}`}></div>
@@ -58,12 +66,12 @@ function LoginPage() {
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
-          <label>Email/Login id</label>
+          <label>Email/Login ID</label>
           <input
             type="text"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="Login id"
+            placeholder="Login ID"
           />
 
           <label>Password</label>

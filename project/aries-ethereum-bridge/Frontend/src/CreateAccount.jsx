@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function CreateAccount() {
   const [formData, setFormData] = useState({
@@ -8,8 +10,6 @@ function CreateAccount() {
     password: ''
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
@@ -22,16 +22,10 @@ function CreateAccount() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
 
-    console.log("Username:", formData.username);
-    console.log("Email:", formData.email);
-    console.log("Password:", formData.password);
-
     if (!formData.username || !formData.email || !formData.password) {
-      setError("All fields are required.");
+      toast.error('All fields are required.');
       setLoading(false);
       return;
     }
@@ -49,16 +43,17 @@ function CreateAccount() {
       if (!response.ok) {
         throw new Error(data.message || 'Failed to create account');
       }
-      setSuccess('Account created successfully!');
+      toast.success('Account created successfully!');
       setFormData({ username: '', email: '', password: '' });
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message);
     }
     setLoading(false);
   };
 
   return (
     <div className="login-container">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="background">
         <div className="circle top-right"></div>
         <div className="circle bottom-left"></div>
@@ -70,9 +65,6 @@ function CreateAccount() {
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
-          {error && <p className="error-message">{error}</p>}
-          {success && <p className="success-message">{success}</p>}
-          
           <label>Username</label>
           <input type="text" name="username" placeholder="Enter your username" value={formData.username} onChange={handleInputChange} required />
           
@@ -94,6 +86,25 @@ function CreateAccount() {
         
         <p>Already have an account? <Link to="/login">Login</Link></p>
       </div>
+
+      <style>{`
+        .create-account-btn {
+          background-color: purple;
+          color: white;
+          padding: 10px 15px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          width: 100%;
+          display: block;
+          text-align: center;
+          margin-top: 10px;
+        }
+        .create-account-btn:hover {
+          background-color: darkpurple;
+        }
+      `}</style>
     </div>
   );
 }
