@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import { Link } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [animate, setAnimate] = useState(true);
+  const navigate = useNavigate();
 
   const handlePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -25,10 +26,14 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-      // Handle successful login
-      console.log(data);
+      
+      if (response.ok) {
+        console.log("Login Successful", data);
+        navigate('/dashboard');
+      } else {
+        console.error("Login Failed", data);
+      }
     } catch (error) {
-      // Handle error
       console.error(error);
     }
   };
@@ -36,7 +41,7 @@ function LoginPage() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setAnimate(true);
-    }, 0); // delay for 0 seconds
+    }, 0);
     return () => clearTimeout(timeoutId);
   }, []);
 
@@ -49,8 +54,7 @@ function LoginPage() {
 
       <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
-          {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className="heading">Degree Verificaton</h1>
+          <h1 className="heading">Degree Verification</h1>
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
@@ -83,7 +87,7 @@ function LoginPage() {
           </div>      
           <button className="login-btn" onClick={handleLogin}>Login</button>
           <Link to="/CreateAccount">
-          <button className="login-btn" >Create Account</button>
+            <button className="login-btn">Create Account</button>
           </Link>
         </div>
       </div>
