@@ -7,7 +7,7 @@ import verifyDomain from '../Utils/verify.Domain.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const secretKey = process.env.secretKey ; // Replace with your actual secret key
+const secretKey = process.env.JWT_SECRET ; // Replace with your actual secret key
 
 async function createUser(username, password, email, res) {
     try {
@@ -15,10 +15,18 @@ async function createUser(username, password, email, res) {
         const isDomainValid = await verifyDomain(email, res);
         if (!isDomainValid) return; // Stop execution if domain is invalid
 
-        // Check if the user already exists
-        const existingUser = await User.findOne({ email });
+        // Check if the email or username already exists
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { username }] 
+        });
+
         if (existingUser) {
-            return res.status(400).send('User already exists');
+            if (existingUser.email === email) {
+                return res.status(400).send('User with this email already exists');
+            }
+            if (existingUser.username === username) {
+                return res.status(400).send('Username already taken');
+            }
         }
 
         // Generate a unique ID for the user
@@ -48,6 +56,7 @@ async function createUser(username, password, email, res) {
         res.status(500).send(`Error creating user: ${error.message}`);
     }
 }
+
 
 async function loginUser(email, password, res) {
 
