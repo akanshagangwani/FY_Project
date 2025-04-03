@@ -11,6 +11,7 @@ import UserInfo from './UserInfo';
 import AdminLoginUser from './AdminLoginUser';
 import Schema from './Schema';
 import Issuance from './Issuance';
+import CreateAccount from './CreateAccount';
 
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
       <Route path="/AdminLogin" element={<AdminLoginUser />} />
       <Route path="/Schema" element={<Schema />} />
       <Route path="/Issuance" element={<Issuance />} />
+      <Route path="/CreateAccount" element={<CreateAccount />} />
+
 
 
 

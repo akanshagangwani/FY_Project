@@ -1,36 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './Login.css';
+// import './Login.css';
 import { Link } from 'react-router-dom';
 
-function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function CreateAccount() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [animate, setAnimate] = useState(true);
 
   const handlePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
-  };
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:3001/sonalimkc/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      // Handle successful login
-      console.log(data);
-    } catch (error) {
-      // Handle error
-      console.error(error);
-    }
   };
 
   useEffect(() => {
@@ -50,25 +27,20 @@ function LoginPage() {
       <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
           {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className="heading">Degree Verificaton</h1>
+          <h1 className="heading">Credex</h1>
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
+            <label>Username</label>
+            <input type="text" placeholder="Enter your username" className="input" />
           <label>Email/Login id</label>
-          <input
-            type="text"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Login id"
-          />
+          <input type="text" placeholder=" Admin Login id" />
 
           <label>Password</label>
           <div className="password-input">
             <input
               type={passwordVisible ? 'text' : 'password'}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Password"
+              placeholder="Admin Password"
             />
             <button
               className="password-visibility-btn"
@@ -80,17 +52,15 @@ function LoginPage() {
                 <i className="fas fa-eye"></i>
               )}
             </button>
-          </div>      
-          <button className="login-btn" onClick={handleLogin}>Login</button>
+          </div>
 
-              <Link to="/CreateAccount">
-              <button className="login-btn">Create Account</button>
-              </Link>
-
+          <Link to="/Login">
+            <button className="login-btn">Create Account</button>
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default CreateAccount;

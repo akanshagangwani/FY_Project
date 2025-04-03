@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './LoginAs.css';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function LoginAs() {
   const navigate = useNavigate();
@@ -21,12 +22,12 @@ function LoginAs() {
   return (
     <div className="login-container1">
       <div className="login-wrapper">
-      <div className="background1">
-        <div className="circle1 top-right1"></div>
-        <div className="circle1 bottom-left1"></div>
+        <div className="background1">
+          <div className="circle1 top-right1"></div>
+          <div className="circle1 bottom-left1"></div>
+        </div>
       </div>
-      </div>
-      
+
 
       <div className="login-box1">
         <div className="logo1">
@@ -46,6 +47,10 @@ function LoginAs() {
           </select>
 
           <button className="login-btn1" onClick={handleLogin}>Login</button>
+          <Link to="/CreateAccount">
+            <button className="login-btn">Create Account</button>
+          </Link>
+
         </div>
       </div>
     </div>
