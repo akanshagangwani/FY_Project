@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Initialize Web3
 const web3 = new Web3(process.env.ETH_RPC_URL || 'http://localhost:8545');
-const CONTRACT_ADDRESS = '0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0'; 
+// const CONTRACT_ADDRESS = '0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0'; 
 const CONTRACT_ABI = JSON.parse(await fs.readFile(path.join(__dirname, 'contract-abi.json'), 'utf8'));
 let contractInstance = null;
 
@@ -132,7 +132,34 @@ app.get('/api/health', (req, res) => {
 });
 
 // Force contract deployment endpoint
-app.post('/api/deploy', deployContract);
+app.post('/api/deploy', async (req, res) => {
+  try {
+    // Create a modified request object with the deploy flag set
+    const modifiedReq = { 
+      ...req, 
+      query: { 
+        ...req.query, 
+        deploy: true 
+      } 
+    };
+    
+    // Call the middleware with our modified request
+    await deployContract(modifiedReq, res, () => {
+      // This should not be called due to the deploy flag
+      res.status(500).json({ 
+        success: false, 
+        message: 'Unexpected middleware flow' 
+      });
+    });
+  } catch (error) {
+    console.error('Error in deploy endpoint:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Contract deployment failed', 
+      error: error.message 
+    });
+  }
+});
 
 // Store credential endpoint
 app.post('/api/credentials', deployContract, bridgeMiddleware, async (req, res) => {

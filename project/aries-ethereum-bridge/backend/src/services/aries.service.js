@@ -6,7 +6,7 @@ class AriesService {
   constructor() {
     this.apiClient = axios.create({
       baseURL: config.ARIES_ADMIN_URL,
-      timeout: 10000,
+      timeout: 30000,
       headers: config.ARIES_ADMIN_API_KEY 
         ? { 'X-API-Key': config.ARIES_ADMIN_API_KEY }
         : {}
@@ -16,6 +16,7 @@ class AriesService {
   // Create a schema
   async createSchema(name, version, attributes) {
     try {
+      console.log('Connecting to Aries at:', config.ARIES_ADMIN_URL);
       const response = await this.apiClient.post('/schemas', {
         schema_name: name,
         schema_version: version,
@@ -54,23 +55,73 @@ class AriesService {
   }
 
   // Check agent status
-  async getStatus() {
-    try {
-      const response = await this.apiClient.get('/status');
-      return response.data;
-    } catch (error) {
-      console.error('Error getting agent status:', error.response?.data || error.message);
-      throw error;
+  // async getStatus() {
+  //   try {
+  //     console.log('Checking Aries agent status at base URL:', this.apiClient.defaults.baseURL);
+  //     const response = await this.apiClient.get('/status');
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Error getting agent status:', error.response?.data || error.message);
+  //     throw error;
+  //   }
+  // }
+
+  // Check agent status
+async getStatus() {
+  try {
+    console.log('Checking Aries agent status at base URL:', this.apiClient.defaults.baseURL);
+    
+    // Try common Aries status endpoints
+    const possibleEndpoints = [
+      '/status',
+      '/',
+      '/status/ready',
+      '/status/live'
+    ];
+    
+    let lastError = null;
+    
+    // Try each endpoint until one works
+    for (const endpoint of possibleEndpoints) {
+      try {
+        console.log(`Attempting to connect to endpoint: ${endpoint}`);
+        const response = await this.apiClient.get(endpoint, { timeout: 5000 }); // Shorter timeout for faster testing
+        console.log(`Successfully connected to ${endpoint}`);
+        return {
+          status: 'active',
+          message: `Connected via endpoint: ${endpoint}`,
+          data: response.data
+        };
+      } catch (error) {
+        console.log(`Failed to connect to ${endpoint}:`, error.message);
+        lastError = error;
+        // Continue to next endpoint
+      }
     }
+    
+    // If we get here, all attempts failed
+    throw new Error(`Failed to connect to Aries agent. Last error: ${lastError.message}`);
+  } catch (error) {
+    console.error('Error getting agent status:', error.message);
+    // For debugging, log the complete error object
+    console.error('Full error object:', JSON.stringify({
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    }));
+    throw error;
   }
+}
+
+
 
   async issueCredential(credDefId, attributes, connectionId) {
     try {
       // Format attributes properly for Aries
-      const formattedAttributes = Array.isArray(attributes) 
-        ? attributes 
+      const formattedAttributes = Array.isArray(attributes)
+        ? attributes
         : Object.entries(attributes).map(([name, value]) => ({ name, value }));
-      
+  
       const credential = {
         auto_remove: false,
         credential_definition_id: credDefId,
@@ -81,59 +132,20 @@ class AriesService {
         connection_id: connectionId,
         trace: true
       };
-      
+  
       // Issue credential through Aries
       const response = await this.apiClient.post('/issue-credential/send', credential);
-      
-      // Store on blockchain via bridge
-      try {
-        const blockchainResponse = await bridgeService.storeCredential(
-          response.data.credential_exchange_id,
-          {
-            credentialId: response.data.credential_exchange_id,
-            schemaId: response.data.schema_id,
-            credentialDefId: credDefId,
-            connectionId: connectionId,
-            attributes: formattedAttributes,
-            issuanceDate: new Date().toISOString()
-          }
-        );
-        
-        // Store transaction ID back in Aries metadata (if possible)
-        if (blockchainResponse.transactionHash) {
-          try {
-            await this.apiClient.post(`/issue-credential/records/${response.data.credential_exchange_id}/send-message`, {
-              message_type: "aries.transaction",
-              content: {
-                transaction_id: blockchainResponse.transactionHash,
-                blockchain: "ethereum"
-              }
-            });
-          } catch (metadataError) {
-            console.warn('Could not store transaction ID in Aries:', metadataError.message);
-          }
-        }
-        
-        // Return combined response
-        return {
-          ...response.data,
-          blockchain: {
-            stored: true,
-            transactionHash: blockchainResponse.transactionHash
-          }
-        };
-      } catch (blockchainError) {
-        console.warn('Warning: Credential issued but not stored on blockchain:', blockchainError.message);
-        
-        // Return partial success
-        return {
-          ...response.data,
-          blockchain: {
-            stored: false,
-            error: blockchainError.message
-          }
-        };
-      }
+  
+      // Store the Verifiable Credential (VC) on the blockchain
+      const blockchainResponse = await bridgeService.storeCredential(
+        response.data.credential_exchange_id,
+        response.data
+      );
+  
+      return {
+        ...response.data,
+        blockchain: blockchainResponse
+      };
     } catch (error) {
       console.error('Error issuing credential:', error.response?.data || error.message);
       throw error;
@@ -172,7 +184,22 @@ class AriesService {
     }
   }
 
+  async createPresentation(credentialId, requestedAttributes) {
+    try {
+      const response = await this.apiClient.post('/present-proof/send-request', {
+        credentialId,
+        requestedAttributes
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating presentation:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
 }
+
+
 
 const ariesService = new AriesService();
 export default ariesService;

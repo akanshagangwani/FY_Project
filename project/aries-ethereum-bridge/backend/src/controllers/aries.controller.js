@@ -1,12 +1,31 @@
 import ariesService from '../services/aries.service.js';
 
 // Get agent status
+// export const getStatus = async (req, res, next) => {
+//   try {
+//     const status = await ariesService.getStatus();
+//     res.status(200).json(status);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
+// Get agent status
 export const getStatus = async (req, res, next) => {
   try {
+    console.log('Received request for agent status');
     const status = await ariesService.getStatus();
+    console.log('Status retrieved successfully:', status);
     res.status(200).json(status);
   } catch (error) {
-    next(error);
+    console.error('Controller error in getStatus:', error.message);
+    // Send a more informative error response
+    res.status(503).json({
+      error: 'Service unavailable',
+      message: `Cannot connect to Aries agent: ${error.message}`,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 
