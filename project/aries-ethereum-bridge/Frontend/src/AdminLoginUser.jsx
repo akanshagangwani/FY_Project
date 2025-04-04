@@ -55,6 +55,8 @@ function AdminLoginUser() {
           <Link to="/Schema">
             <button className="login-btn">Login</button>
           </Link>
+          <p>don't have an account? <Link to="/CreateAccount">create account</Link></p>
+
         </div>
       </div>
     </div>

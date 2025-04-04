@@ -51,7 +51,7 @@ body {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
   width: 300px;
-  height: 300px;
+  height: 350px;
   position: relative;
   z-index: 1;
   animation: login-box 2s ease-in-out;
@@ -120,10 +120,14 @@ body {
 }
 
 .heading {
-  padding-bottom: 15px;
+  padding-bottom: 25px;
   animation: heading 2s ease-in-out;
 }
 
+.logo{
+  /* margin-bottom: 50px; */
+  padding-bottom: 10px;
+}
 /* Animations */
 @keyframes circle-top-right {
   0% {
@@ -167,3 +171,8 @@ body {
     transform: translateY(0);
   }
 }
+
+
+
+
+

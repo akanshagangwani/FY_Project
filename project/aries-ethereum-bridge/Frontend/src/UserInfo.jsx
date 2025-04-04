@@ -19,12 +19,14 @@ const UserInfo = () => {
           <Link to="/" style={{ textDecoration: "none" }}>
             <span className="brand">Credex</span>
           </Link>
-        </div>
-        <div className="nav-links2">
+          <a>|</a>
+          <div className="nav-links2">
           <a href="/dashboard" >Home</a>
           <a href="/UserInfo" className="active-link">Information</a>
           <a href="#">Certificates</a>
         </div>
+        </div>
+        
         <FaUser className="user-icon2" />
       </nav>
 

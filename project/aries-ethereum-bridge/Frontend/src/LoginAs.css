@@ -49,6 +49,7 @@ body {
   width: 320px;
   position: relative;
   z-index: 1;
+  height: 40vh;
 }
 
 /* Logo */
@@ -68,30 +69,37 @@ body {
   display: block;
   text-align: left;
   font-size: 14px;
-  margin-bottom: 5px;
+  margin-top: 45px;
   font-weight: bold;
+}
+
+.las{
+  justify-content: center;
+  align-items: center;
+  padding-left: 130px;
+  padding-bottom: 20px;
 }
 
 .login-form1 input{
   width: 90%;
   padding: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 5px; 
 }
 
 .dropdown1 {
-  width: 97.5%;
+  width: 51%;
   padding: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   border: 1px solid #ccc;
   border-radius: 25px;
-  
+  text-align: center;
 }
 
 /* Login Button */
 .login-btn1 {
-  width: 50%;
+  width: 51%;
   padding: 10px;
   background: #6a11cb;
   color: white;
@@ -123,4 +131,8 @@ body {
   font-size: 16px;
   color: #0f0c13;
   padding-bottom: 12px;
+}
+
+.heading1{
+  padding-bottom: 40px;
 }

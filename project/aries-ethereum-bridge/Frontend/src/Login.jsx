@@ -33,7 +33,7 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         toast.success('Login Successful!');
         navigate('/dashboard');
@@ -63,6 +63,7 @@ function LoginPage() {
       <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
           <h1 className="heading">Credex</h1>
+         
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
@@ -92,11 +93,9 @@ function LoginPage() {
                 <i className="fas fa-eye"></i>
               )}
             </button>
-          </div>      
+          </div>
           <button className="login-btn" onClick={handleLogin}>Login</button>
-          <Link to="/CreateAccount">
-            <button className="login-btn">Create Account</button>
-          </Link>
+          <p>Don't have an account? <Link to="/CreateAccount">create account</Link></p>
         </div>
       </div>
     </div>

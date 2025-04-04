@@ -31,12 +31,12 @@ function LoginAs() {
       <div className="login-box1">
         <div className="logo1">
           {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className='heading1'>Project</h1>
+          <h1 className='heading1'>Credex</h1>
         </div>
 
         <div className="login-form1">
           <div className='login-as1'>
-            <label>Login as</label>
+            <label className='las'>Login as</label>
           </div>
 
           <select className="dropdown1" value={selectedUser} onChange={handleUserChange}>
@@ -46,9 +46,7 @@ function LoginAs() {
           </select>
 
           <button className="login-btn1" onClick={handleLogin}>Login</button>
-          <Link to="/CreateAccount">
-            <button className="login-btn" >Create Account</button>
-          </Link>
+          <p>Don't have an account? <Link to="/CreateAccount">create account</Link></p>
         </div>
       </div>
     </div>

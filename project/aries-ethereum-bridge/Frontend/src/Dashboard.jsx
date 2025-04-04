@@ -11,18 +11,20 @@ const Dashboard = () => {
           <img
             src="/logo.png" // Replace with actual logo
             alt="Credex Logo"
-            className="logo"
+            className="logo1"
           />
           <Link to="/" style={{textDecoration:"none"}}>
           <span className="brand">Credex</span>
           </Link>
-        </div>
-        <div className="nav-links">
+          <a>|</a>
+          <div className="nav-links">
           <a href="/dashboard" className="active-link">Home</a>
           <a href="/UserInfo">Information</a>
           <a href="#">Certificates</a>
         </div>
-        <FaUser className="user-icon" />
+        </div>
+       
+        <FaUser className="user-icon1" />
       </nav>
 
       {/* Main Content */}

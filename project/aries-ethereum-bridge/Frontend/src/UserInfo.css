@@ -33,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align links to the left */
-  margin-left: 0; /* Remove any existing margin */
+  margin-left: 15px; /* Remove any existing margin */
   
 }
 
@@ -144,21 +144,19 @@
   font-size: 16px;
   display: inline-block;
   margin-right: 37.8px; /* Set margin to approximately 1 cm */
-
+  text-decoration: none;
 }
 
 .tab.active {
   position: relative;
 }
 
+.tab.active {
+  color: #ab34f0; 
+  border-bottom: none;
+}
 .tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #ab34f0;
+  content: none;
 }
 
 .tab:hover {

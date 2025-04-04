@@ -12,6 +12,7 @@
   justify-content: space-between;
   align-items: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 5vh;
 }
 
 .logo-section {
@@ -20,7 +21,7 @@
   gap: 8px;
 }
 
-.logo {
+.logo1 {
   height: 24px;
 }
 
@@ -33,7 +34,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align links to the left */
-  margin-left: 0; /* Remove any existing margin */
+  margin-left: 20px; /* Remove any existing margin */
   
 }
 
@@ -51,8 +52,11 @@
   border-bottom: 2px solid #2777f7;
 }
 
-.user-icon {
+.user-icon1 {
   color: #030303;
+  align-content: center;
+  justify-content: center;
+
 }
 
 .content-container {

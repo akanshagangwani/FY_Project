@@ -52,7 +52,7 @@ function CreateAccount() {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container" >
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="background">
         <div className="circle top-right"></div>
@@ -104,6 +104,9 @@ function CreateAccount() {
         .create-account-btn:hover {
           background-color: darkpurple;
         }
+          .login-box {
+          height:55vh;}
+
       `}</style>
     </div>
   );
