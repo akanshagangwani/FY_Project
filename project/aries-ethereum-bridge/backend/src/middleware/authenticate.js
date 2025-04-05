@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
 import ApiError from '../Utils/ApiError.js';
-const secretKey = '77c92a03f526dbd4d46ef422f95b4f71'; // Make sure to use the same secret key used for signing the token
+import dotenv from 'dotenv';
+import Joi from 'joi'; 
+import pick from '../Utils/pick.js';
+dotenv.config();
+
+const secretKey = process.env.JWT_SECRET;
 
 function verifyToken(req, res, next) {
     const token = req.headers.authorization.split(' ')[1];

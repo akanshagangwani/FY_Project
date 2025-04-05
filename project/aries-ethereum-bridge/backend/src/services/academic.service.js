@@ -38,7 +38,7 @@ class AcademicService {
 async deploySmartContract() {
   try {
     const accounts = await this.web3.eth.getAccounts();
-    const contractPath = path.join(__dirname, '../../smartcontracts/contracts/CredentialStore.sol');
+    const contractPath = path.join(__dirname, '../smartcontracts/contracts/CredentialStore.sol');
     const source = await fs.readFile(contractPath, 'utf8');
 
     const input = {
@@ -61,7 +61,7 @@ async deploySmartContract() {
     const { abi } = contract;
 
     // Save ABI to file in the smartcontracts directory
-    const abiPath = path.join(__dirname, '../../smartcontracts/contract-abi.json');
+    const abiPath = path.join(__dirname, '../smartcontracts/contract-abi.json');
     await fs.writeFile(abiPath, JSON.stringify(abi, null, 2));
     console.log('Contract ABI saved to contract-abi.json');
 
@@ -74,7 +74,7 @@ async deploySmartContract() {
     console.log(`Contract deployed at address: ${deployedContract.options.address}`);
 
     // Save contract address to a file in the smartcontracts directory
-    const addressPath = path.join(__dirname, '../../smartcontracts/contract-address.txt');
+    const addressPath = path.join(__dirname, '../smartcontracts/contract-address.txt');
     await fs.writeFile(addressPath, deployedContract.options.address);
     console.log('Contract address saved to contract-address.txt');
 
@@ -89,8 +89,8 @@ async deploySmartContract() {
   // Initialize the smart contract
   async initializeContract() {
     try {
-      const abiPath = path.join(__dirname, '../../ethereum-bridge/src/contract-abi.json');
-      const addressPath = path.join(__dirname, '../../ethereum-bridge/src/contract-address.txt');
+      const abiPath = path.join(__dirname, '../smartcontracts/contract-abi.json');
+      const addressPath = path.join(__dirname, '../smartcontracts/contract-address.txt');
       const abi = JSON.parse(await fs.readFile(abiPath, 'utf8'));
       const address = await fs.readFile(addressPath, 'utf8');
       this.contractInstance = new this.web3.eth.Contract(abi, address.trim());

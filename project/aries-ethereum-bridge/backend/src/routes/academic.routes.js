@@ -4,7 +4,6 @@ import {
     issueCredential,
     verifyCredential,
     deployContract,
-    storeCredential,
     checkHealth,
 } from '../controllers/academic.controller.js';
 import validate from '../middleware/validate.js';
@@ -27,7 +26,5 @@ router.get('/credential/:credentialId', verifyCredential);
 // Deploy smart contract
 router.post('/contract/deploy', deployContract);
 
-// Store credential hash
-router.post('/credential/store', storeCredential);
 
 export default router;

@@ -52,13 +52,13 @@ export const deployContract = async (req, res) => {
   }
 };
 
-export const storeCredential = async (req, res) => {
-  try {
-    const { credentialId, credentialHash } = req.body;
-    await academicService.storeCredential(credentialId, credentialHash);
-    res.status(201).json({ success: true });
-  } catch (error) {
-    console.error('Error storing credential:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-};
+// export const storeCredential = async (req, res) => {
+//   try {
+//     const { credentialId, credentialHash } = req.body;
+//     await academicService.storeCredential(credentialId, credentialHash);
+//     res.status(201).json({ success: true });
+//   } catch (error) {
+//     console.error('Error storing credential:', error.message);
+//     res.status(500).json({ error: error.message });
+//   }
+// };
