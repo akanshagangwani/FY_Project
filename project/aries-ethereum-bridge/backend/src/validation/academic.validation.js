@@ -1,6 +1,10 @@
 import Joi from 'joi';
 
-export const createSchema = Joi.object({});
+export const createSchema = Joi.object({
+  name: Joi.string().required(),
+  version: Joi.string().required(),
+  attributes: Joi.array().items(Joi.string()).required()
+});
 
 export const createCredentialDefinition = Joi.object({
   schemaId: Joi.string().required()

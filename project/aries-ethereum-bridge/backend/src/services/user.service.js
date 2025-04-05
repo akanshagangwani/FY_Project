@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { User } from '../Utils/mdb.js';
 import { loginSchema } from '../models/loginSchema.js';
 import verifyDomain from '../Utils/verify.Domain.js'; 
