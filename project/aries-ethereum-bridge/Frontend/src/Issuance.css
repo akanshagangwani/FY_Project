@@ -122,3 +122,37 @@
     background-color: #5b1a9b;
   }
   
+  .Centerlogo{
+    width: 90%;
+    height: 100%;
+    z-index: 1;
+    padding-left: 25px;
+  }
+
+  .pop-up-box {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  
+  .pop-up-box.show {
+    display: block;
+  }
+  
+  .pop-up-box button {
+    margin: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #8970ef;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .pop-up-box button:hover {
+    background-color: #7b36af;
+  }

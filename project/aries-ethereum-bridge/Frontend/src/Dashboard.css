@@ -5,6 +5,7 @@
   width: 100vw;
 }
 
+
 .navbar {
   background: white;
   padding: 16px;
@@ -12,8 +13,9 @@
   justify-content: space-between;
   align-items: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 5vh;
+  /* height: 5vh; */
 }
+
 
 .logo-section {
   display: flex;
@@ -34,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align links to the left */
-  margin-left: 20px; /* Remove any existing margin */
+  margin-left: 15px; /* Remove any existing margin */
   
 }
 
@@ -121,18 +123,10 @@
   color: #374151;
 }
 
-.logo-center {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 50px; /* Add some space between the logo and the top of the page */
-}
-
-.logo-center .logo {
-  width: 100px; /* Adjust the width of the logo */
-  height: 100px; /* Adjust the height of the logo */
-  position: absolute;
-  background-color: #ccc; /* Change the background color to grey */
-  opacity: 0.4;
+.Centerlogo{
+  width: 90%;
+  height: 100%;
+  z-index: 1;
+  padding-left: 25px;
 }
 

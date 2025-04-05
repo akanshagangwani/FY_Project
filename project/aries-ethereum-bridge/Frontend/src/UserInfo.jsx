@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./UserInfo.css";
 import { Link } from 'react-router-dom';
-import { FaUser } from "react-icons/fa";
+import ProfileButton from "./ProfileButton";
+
 
 const UserInfo = () => {
   const [activeTab, setActiveTab] = useState("basic");
@@ -27,7 +28,7 @@ const UserInfo = () => {
         </div>
         </div>
         
-        <FaUser className="user-icon2" />
+        <ProfileButton/>
       </nav>
 
       {/* Main Content */}
@@ -93,9 +94,9 @@ const UserInfo = () => {
         </div>
         <div className="logo-center2">
           <img
-            src="/logo.png" // Replace with actual logo
+            src="/Halflogo.png" // Replace with actual logo
             alt="Credex Logo"
-            className="centerlogo"
+            className="Centerlogo"
           />
         </div>
       </div>

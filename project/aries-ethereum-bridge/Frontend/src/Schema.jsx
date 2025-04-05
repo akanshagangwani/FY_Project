@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./Schema.css";
 import { Link } from 'react-router-dom';
-import { FaUser } from "react-icons/fa";
+import ProfileButton from "./ProfileButton";
+
 
 const Schema = () => {
     const [activeTab, setActiveTab] = useState("basic");
@@ -31,8 +32,7 @@ const Schema = () => {
                 </div>
                 </div>
                
-
-                <FaUser className="user-icon" />
+                <ProfileButton/>
             </nav>
 
             {/* Main Content */}
@@ -100,9 +100,9 @@ const Schema = () => {
                 </div>
                 <div className="logo-center3">
                     <img
-                        src="/logo.png" // Replace with actual logo
+                        src="/Halflogo.png" // Replace with actual logo
                         alt="Credex Logo"
-                        className="centerlogo"
+                        className="Centerlogo"
                     />
                 </div>
             </div>

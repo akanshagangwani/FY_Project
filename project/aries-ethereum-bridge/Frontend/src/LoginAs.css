@@ -97,6 +97,12 @@ body {
   text-align: center;
 }
 
+.dropdown1 option {
+  padding-left: 50%;
+  text-align: left;
+  transform: translateX(-50%);
+}
+
 /* Login Button */
 .login-btn1 {
   width: 51%;

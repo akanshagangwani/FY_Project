@@ -117,19 +117,13 @@
   color: #374151;
 }
 
-.logo-center2 {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 50px; /* Add some space between the logo and the top of the page */
-}
 
-.logo-center2 .logo {
-  width: 100px; /* Adjust the width of the logo */
-  height: 100px; /* Adjust the height of the logo */
-  position: absolute;
-  background-color: #ccc; /* Change the background color to grey */
-  opacity: 0.4;
+
+.Centerlogo{
+  width: 90%;
+  height: 100%;
+  z-index: 1;
+  padding-left: 25px;
 }
 
 .tab-container {
