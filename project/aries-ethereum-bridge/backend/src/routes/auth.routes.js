@@ -163,6 +163,6 @@ router.post('/login', validate(userValidation.loginUser), userController.loginUs
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/test', authenticate, validate(userValidation.testtoken), userController.testtoken);
+router.get('/test', authenticate,userController.testtoken);
 
 export default router;

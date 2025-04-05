@@ -21,24 +21,26 @@ function verifyToken(req, res, next) {
     next();
 }
 
-const authenticate = (schema) => (req, res, next) => {
+function authenticate(req, res, next) {
     try {
-        verifyToken(req, res, next);
-        const validSchema = pick(schema, ['params', 'query', 'body']);
-        const object = pick(req, Object.keys(validSchema));
-        const { value, error } = Joi.compile(validSchema)
-            .prefs({ errors: { label: 'key' } })
-            .validate(object);
-
-        if (error) {
-            const errorMessage = error.details.map((details) => details.message).join(', ');
-            return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Authentication required' });
         }
-        Object.assign(req, value);
-        return next();
-    } catch (err) {
-        return next(new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err.message));
+        
+        const token = authHeader.split(' ')[1];
+        
+        try {
+            const decoded = jwt.verify(token, secretKey);
+            req.user = decoded;
+            return next();
+        } catch (err) {
+            return res.status(401).json({ error: 'Invalid Token' });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
-};
+}
 
 export default authenticate;
