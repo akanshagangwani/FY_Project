@@ -1,31 +1,21 @@
-FROM node:16
+FROM node:18
 
 WORKDIR /app
 
 # Copy package files first
 COPY package*.json ./
 
-# More aggressively replace bcrypt with bcryptjs in package.json
-RUN sed -i 's/"bcrypt"/"bcryptjs"/g' package.json && \
-    sed -i 's/"dependencies": {/"dependencies": {\n    "bcryptjs": "^5.0.1",/g' package.json
+# Install dependencies
+RUN npm install
 
-# Clean install without any existing node_modules
-RUN npm cache clean --force && \
-    npm install
-
-# Then copy everything else
+# Copy the rest of the application
 COPY . .
 
-# Replace bcrypt with bcryptjs in all JavaScript files (both require and import styles)
-RUN find . -type f -name "*.js" -exec sed -i 's/require("bcrypt")/require("bcryptjs")/g' {} \; && \
-    find . -type f -name "*.js" -exec sed -i "s/require('bcrypt')/require('bcryptjs')/g" {} \; && \
-    find . -type f -name "*.js" -exec sed -i "s/import bcrypt from 'bcrypt'/import bcrypt from 'bcryptjs'/g" {} \; && \
-    find . -type f -name "*.js" -exec sed -i 's/import bcrypt from "bcrypt"/import bcrypt from "bcryptjs"/g' {} \;
+# Install Solidity compiler
+RUN npm install solc@0.8.17
 
-# Final cleanup of any bcrypt remnants
-RUN rm -rf node_modules/bcrypt || true
-
+# Expose the backend port
 EXPOSE 3001
 
-# Use the correct entry point for your Node.js app
+# Start the backend server
 CMD ["node", "server.js"]

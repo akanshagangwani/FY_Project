@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { User } from '../Utils/mdb.js';
 import { loginSchema } from '../models/loginSchema.js';
 import verifyDomain from '../Utils/verify.Domain.js'; 
 import dotenv from 'dotenv';
 dotenv.config();
+
 
 const secretKey = process.env.JWT_SECRET; // Replace with your actual secret key
 
@@ -51,30 +52,24 @@ async function createUser(username, password, email, res) {
 
 async function loginUser(email, password, res) {
 
-    // Validate the request body
-    // console.log(email, password);
+
     const { error } = loginSchema.validate({ email, password });
     if (error) {
         return res.status(400).send(`Validation error: ${error.details[0].message}`);
     }
 
     try {
-        // Find the user by email
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json('User not found');
         }
-
-        // Compare the provided password with the stored hashed password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json(`Invalid password`);
         }
 
-        // Create a time-limited token (e.g., expires in 1 hour)
         const token = jwt.sign({ userId: user.id, username: user.username, email: user.email }, secretKey, { expiresIn: '1h' });
 
-        // Update the user's token in the database
         user.token = token;
         await user.save();
         const response = {
