@@ -74,8 +74,8 @@ const UserInfo = () => {
 
             {activeTab === "parent" && (
               <div>
-                <p><strong>Father's Name:</strong> KANHAIYA GANGWANI</p>
-                <p><strong>Mother's Name:</strong> XYZ GANGWANI</p>
+                <p><strong>Father's Name:</strong> Nayan Papa</p>
+                <p><strong>Mother's Name:</strong> Deju mummy</p>
                 <p><strong>Father's Occupation:</strong> Business</p>
                 <p><strong>Mother's Occupation:</strong> Homemaker</p>
                 <p><strong>Contact:</strong> 9876543210</p>
@@ -87,7 +87,7 @@ const UserInfo = () => {
                 <p><strong>University Enrollment No.:</strong> 2021106600975507</p>
                 <p><strong>Degree:</strong> Bachelors in Technology</p>
                 <p><strong>Passing Year:</strong> 2025</p>
-                <p><strong>CGPA:</strong> 8.5</p>
+                <p><strong>CGPA:</strong> 9.25</p>
               </div>
             )}
           </div>
