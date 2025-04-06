@@ -74,8 +74,8 @@ const UserInfo = () => {
 
             {activeTab === "parent" && (
               <div>
-                <p><strong>Father's Name:</strong> Kanhaiya Gangwani</p>
-                <p><strong>Mother's Name:</strong> Roma Gangwani</p>
+                <p><strong>Father's Name:</strong> Nayan Papa</p>
+                <p><strong>Mother's Name:</strong> Deju mummy</p>
                 <p><strong>Father's Occupation:</strong> Business</p>
                 <p><strong>Mother's Occupation:</strong> Homemaker</p>
                 <p><strong>Contact:</strong> 9876543210</p>
