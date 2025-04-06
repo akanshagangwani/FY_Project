@@ -1,117 +1,109 @@
 import academicService from '../services/academic.service.js';
 
-// Create academic schema
-export const createAcademicSchema = async (req, res, next) => {
+export const createSchema = async (req, res) => {
   try {
-    const schema = await academicService.createAcademicSchema();
+    const schema = await academicService.setupAcademicCredentials();
     res.status(201).json(schema);
   } catch (error) {
-    next(error);
+    console.error('Error creating schema:', error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Create academic credential definition
-export const createAcademicCredentialDefinition = async (req, res, next) => {
+export const issueCredential = async (req, res) => {
   try {
-    const { schemaId } = req.body;
-    
-    if (!schemaId) {
-      return res.status(400).json({ message: 'Schema ID is required' });
-    }
-    
-    const credentialDefinition = await academicService.createAcademicCredentialDefinition(schemaId);
-    res.status(201).json(credentialDefinition);
+    const result = await academicService.issueCredential(req.body);
+    res.status(201).json(result);
   } catch (error) {
-    next(error);
+    console.error('Error issuing credential:', error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Issue academic credential
-export const issueAcademicCredential = async (req, res, next) => {
-  try {
-    const { 
-      connectionId, 
-      studentName, 
-      studentId, 
-      degree, 
-      graduationDate, 
-      institution,
-      courses = [],
-      gpa,
-      credentialDefinitionId
-    } = req.body;
-    
-    if (!credentialDefinitionId || !connectionId || !studentName || !studentId || !degree || !graduationDate || !institution || !gpa) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-    
-    // Issue credential using academic service
-    const result = await academicService.issueCredential({
-      connectionId,
-      studentName,
-      studentId,
-      degree,
-      graduationDate,
-      institution,
-      courses,
-      gpa,
-      credentialDefinitionId
-    });
-    
-    res.status(201).json({
-      success: true,
-      message: 'Academic credential issued successfully',
-      credentialId: result.credentialId,
-      blockchain: result.blockchain
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Verify academic credential
-export const verifyAcademicCredential = async (req, res, next) => {
+export const verifyCredential = async (req, res) => {
   try {
     const { credentialId } = req.params;
-    
-    if (!credentialId) {
-      return res.status(400).json({ message: 'Credential ID is required' });
-    }
-    
-    // Verify credential using academic service
     const result = await academicService.verifyCredential(credentialId);
-    
-    res.json({
-      success: true,
-      verified: result.verified,
-      credential: result.credential,
-      blockchainStatus: result.blockchainStatus
-    });
+    res.status(200).json(result);
   } catch (error) {
-    next(error);
+    console.error('Error verifying credential:', error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Get academic credential details
-export const getAcademicCredentialDetails = async (req, res, next) => {
+
+export const checkHealth = async (req, res) => {
   try {
-    const { credentialId } = req.params;
+    const healthStatus = await academicService.checkAriesHealth();
+    res.status(200).json(healthStatus);
+  } catch (error) {
+    console.error('Error checking health:', error.message);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+};
+
+export const deployContract = async (req, res) => {
+  try {
+    const result = await academicService.deploySmartContract();
+    res.status(201).json(result);
+  } catch (error) {
+    console.error('Error deploying smart contract:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const getConnections = async (req, res) => {
+  try {
+    const result = await academicService.getConnections();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error getting connections:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const sendInvitationToUser = async (req, res) => {
+  try {
+    // Get user ID from authenticated request
+    const userId = req.user.userId;
+    const result = await academicService.sendConnectionInvitation(userId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error sending invitation:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const acceptUserInvitation = async (req, res) => {
+  try {
+    const { invitationCode } = req.body;
+    const userId = req.user.userId;
     
-    if (!credentialId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Credential ID is required' 
-      });
+    if (!invitationCode) {
+      return res.status(400).json({ error: 'Invitation code is required' });
     }
     
-    // Get credential details using academic service
-    const result = await academicService.getCredentialDetails(credentialId);
-    
-    res.json({
-      success: true,
-      data: result
-    });
+    const result = await academicService.acceptInvitation(invitationCode, userId);
+    res.status(200).json(result);
   } catch (error) {
-    next(error);
+    console.error('Error accepting invitation:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const getConnectionStatus = async (req, res) => {
+  try {
+    const { connectionId } = req.params;
+    const result = await academicService.checkConnectionStatus(connectionId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error getting connection status:', error.message);
+    res.status(500).json({ error: error.message });
   }
 };
