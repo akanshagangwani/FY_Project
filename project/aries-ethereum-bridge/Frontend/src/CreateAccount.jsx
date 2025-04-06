@@ -31,7 +31,7 @@ function CreateAccount() {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/sonalimkc/auth/create', {
+      const response = await fetch('http://localhost:3001/credex/auth/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

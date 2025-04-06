@@ -25,7 +25,7 @@ function LoginPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/sonalimkc/auth/login', {
+      const response = await fetch('http://localhost:3001/credex/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
