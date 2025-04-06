@@ -1,57 +1,64 @@
 import React, { useState } from "react";
 import "./UserInfo.css";
 import { Link } from 'react-router-dom';
+import ProfileButton from "./ProfileButton";
+
 
 const UserInfo = () => {
   const [activeTab, setActiveTab] = useState("basic");
 
   return (
-    <div className="user-info-container2">
-      <aside className="sidebar2">
-        <h2>Project</h2>
-        <nav>
-          <ul>
-            <Link to="/"  style={{ textDecoration: 'none' }}>
-            <li className="active2">Home</li>
-            </Link>
-            <li>Information</li>
-            <li>Degrees</li>
-          </ul>
-        </nav>
-        <button className="back-button2">
-          <Link to="/dashboard" style={{textDecoration:'none'}}>←</Link>
-        </button>
-      </aside>
+    <div className="home-container2">
+      {/* Navbar */}
+      <nav className="navbar2">
+        <div className="logo-section2">
+          <img
+            src="/logo.png" // Replace with actual logo
+            alt="Credex Logo"
+            className="logo2"
+          />
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <span className="brand">Credex</span>
+          </Link>
+          <a>|</a>
+          <div className="nav-links2">
+          <a href="/dashboard" >Home</a>
+          <a href="/UserInfo" className="active-link">Information</a>
+          <a href="#">Certificates</a>
+        </div>
+        </div>
+        
+        <ProfileButton/>
+      </nav>
 
-      <main className="content2">
-        <header>
-          <img src="profile-pic-url" alt="User" className="profile-pic2" />
-        </header>
-
-        <section className="user-info-section2">
-          <h1>User Information</h1>
-
-          <div className="tabs2">
-            <button
-              className={activeTab === "basic" ? "active" : ""}
+      {/* Main Content */}
+      <div className="content-container2">
+        <div className="content-box2">
+          <div className="background-overlay2"></div>
+          <h1 className="title2">User  Information</h1>
+          <div className="profile-section2">
+            <br></br>
+          </div>
+          <div className="tab-container">
+            <div
+              className={activeTab === "basic" ? "tab active" : "tab"}
               onClick={() => setActiveTab("basic")}
             >
               Basic Information
-            </button>
-            <button
-              className={activeTab === "parent" ? "active" : ""}
+            </div>
+            <div
+              className={activeTab === "parent" ? "tab active" : "tab"}
               onClick={() => setActiveTab("parent")}
             >
               Parent Details
-            </button>
-            <button
-              className={activeTab === "academic" ? "active" : ""}
+            </div>
+            <div
+              className={activeTab === "academic" ? "tab active" : "tab"}
               onClick={() => setActiveTab("academic")}
             >
               Academic Records
-            </button>
+            </div>
           </div>
-
           <div className="info-content2">
             {activeTab === "basic" && (
               <div>
@@ -84,8 +91,15 @@ const UserInfo = () => {
               </div>
             )}
           </div>
-        </section>
-      </main>
+        </div>
+        <div className="logo-center2">
+          <img
+            src="/Halflogo.png" // Replace with actual logo
+            alt="Credex Logo"
+            className="Centerlogo"
+          />
+        </div>
+      </div>
     </div>
   );
 };

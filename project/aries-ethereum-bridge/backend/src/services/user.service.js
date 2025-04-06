@@ -7,7 +7,8 @@ import verifyDomain from '../Utils/verify.Domain.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const secretKey = process.env.JWT_SECRET ; 
+
+const secretKey = process.env.JWT_SECRET; // Replace with your actual secret key
 
 async function createUser(username, password, email, res) {
     try {

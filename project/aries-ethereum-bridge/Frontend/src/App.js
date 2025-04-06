@@ -11,7 +11,7 @@ import UserInfo from './UserInfo';
 import AdminLoginUser from './AdminLoginUser';
 import Schema from './Schema';
 import Issuance from './Issuance';
-
+import CreateAccount from './CreateAccount';
 
 function App() {
   return (
@@ -22,10 +22,11 @@ function App() {
       <Route path="/login" element={<LoginAs />} />
       <Route path="/loginInfo" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/userinfo" element={<UserInfo />} />
+      <Route path="/UserInfo" element={<UserInfo />} />
       <Route path="/AdminLogin" element={<AdminLoginUser />} />
       <Route path="/Schema" element={<Schema />} />
       <Route path="/Issuance" element={<Issuance />} />
+      <Route path="/CreateAccount" element={<CreateAccount />} />
 
 
 

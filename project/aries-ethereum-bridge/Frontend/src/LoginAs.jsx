@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './LoginAs.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginAs() {
   const navigate = useNavigate();
@@ -21,22 +21,22 @@ function LoginAs() {
   return (
     <div className="login-container1">
       <div className="login-wrapper">
-      <div className="background1">
-        <div className="circle1 top-right1"></div>
-        <div className="circle1 bottom-left1"></div>
+        <div className="background1">
+          <div className="circle1 top-right1"></div>
+          <div className="circle1 bottom-left1"></div>
+        </div>
       </div>
-      </div>
-      
+
 
       <div className="login-box1">
         <div className="logo1">
           {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className='heading1'>Project</h1>
+          <h1 className='heading1'>Credex</h1>
         </div>
 
         <div className="login-form1">
           <div className='login-as1'>
-            <label>Login as</label>
+            <label className='las'>Login as</label>
           </div>
 
           <select className="dropdown1" value={selectedUser} onChange={handleUserChange}>
@@ -46,6 +46,7 @@ function LoginAs() {
           </select>
 
           <button className="login-btn1" onClick={handleLogin}>Login</button>
+          <p>Don't have an account? <Link to="/CreateAccount">create account</Link></p>
         </div>
       </div>
     </div>

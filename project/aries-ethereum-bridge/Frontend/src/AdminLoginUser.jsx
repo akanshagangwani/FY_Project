@@ -27,7 +27,7 @@ function AdminLoginUser() {
       <div className={`login-box ${animate ? 'animated' : 'initial'}`}>
         <div className="logo">
           {/* <img src="/logo.png" alt="Logo" className="logo-img" /> */}
-          <h1 className="heading">Project</h1>
+          <h1 className="heading">Credex</h1>
         </div>
 
         <div className={`login-form ${animate ? 'animated' : 'initial'}`}>
@@ -55,6 +55,8 @@ function AdminLoginUser() {
           <Link to="/Schema">
             <button className="login-btn">Login</button>
           </Link>
+          <p>don't have an account? <Link to="/CreateAccount">create account</Link></p>
+
         </div>
       </div>
     </div>

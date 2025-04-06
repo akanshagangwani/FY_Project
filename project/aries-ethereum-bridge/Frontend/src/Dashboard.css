@@ -1,110 +1,132 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
+
+.home-container {
+  background-image: linear-gradient(to left, #d2caf3, #ffffff);
+  min-height: 100vh;
+  width: 100vw;
+}
+
+
+.navbar {
+  background: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* height: 5vh; */
+}
+
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo1 {
+  height: 24px;
+}
+
+.brand {
+  font-weight: bold;
+  color: #030303
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align links to the left */
+  margin-left: 15px; /* Remove any existing margin */
   
-  .dashboard {
-    display: flex;
-    height: 100vh;
-    margin-right: 800px;
-  }
-  
-  .sidebar {
-    width: 250px;
-    background: #d9b3ff;
-    padding: 20px;
-    color: black;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  /* .sidebar h2 {
-    font-size: 20px;
-    font-weight: bold;
-  } */
-  
-  nav ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  nav ul li {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  nav ul .active {
-    font-weight: bold;
-  }
-  
-  .back-button {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 10px;
-    color: rgb(0, 0, 0); /* default color */
-  }
-  
-  .back-button:hover {
-    color: rgb(134, 27, 233); /* color on hover */
-  }
-  
-  .content {
-    flex: 1;
-    padding: 30px;
-    background: white;
-  }
-  
-  header {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .profile-pic {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-  }
-  
-  /* .home-section h1 {
-    font-size: 32px;
-    font-weight: bold;
-  } */
-  
-  .welcome {
-    color: blueviolet;
-    font-weight: bold;
-  }
-  
-  .user-info {
-    display: flex;
-    /* align-items: center; */
-    margin-top: 30px;
-  }
-  
-  .user-profile-pic {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-right: 15px;
-  }
-  
-  .registration {
-    font-size: 14px;
-    margin-top: 100px;
-  }
-  
-  .eye-icon {
-    cursor: pointer;
-  }
-  
-  .verified-results {
-    margin-top: 20px;
-  }
-  
-  .verified-results h4 {
-    color: blueviolet;
-  }
-  
+}
+
+.nav-links a {
+  margin-right: 16px;
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+  transition: color 0.3s; /* Smooth transition for hover effect */
+
+}
+
+.nav-links .active-link {
+  color: #3b82f6;
+  border-bottom: 2px solid #2777f7;
+}
+
+.user-icon1 {
+  color: #030303;
+  align-content: center;
+  justify-content: center;
+
+}
+
+.content-container {
+  display: flex;
+  margin-top: 40px;
+  width: 100vw;
+}
+
+.content-box {
+  padding: 32px;
+  width: 100%;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.welcome {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.profile-pic {
+  height: 64px;
+  width: 64px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.registration {
+  margin-top: 20px;
+  color: #6b7280;
+}
+
+.reg-number {
+  background: #e5e7eb;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.degree-title {
+  margin-top: 24px;
+  color: #9333ea;
+  font-weight: 600;
+}
+
+.degree-info {
+  margin-top: 4px;
+  color: #374151;
+}
+
+.Centerlogo{
+  width: 90%;
+  height: 100%;
+  z-index: 1;
+  padding-left: 25px;
+}
+

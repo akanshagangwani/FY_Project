@@ -1,101 +1,108 @@
 import React, { useState } from "react";
-import "./UserInfo.css";
+import "./Schema.css";
 import { Link } from 'react-router-dom';
+import ProfileButton from "./ProfileButton";
 
 const Issuance = () => {
     const [activeTab, setActiveTab] = useState("basic");
+    const [attributes, setAttributes] = useState(["", ""]);
+
+    const addAttribute = () => {
+        setAttributes([...attributes, ""]);
+    };
 
     return (
-        <div className="user-info-container2">
-            <aside className="sidebar2">
-                <h2>Project</h2>
-                <nav>
-                    <ul>
-                        <Link to="/"  style={{ textDecoration: 'none' }}>
-                            <li className="active2">Home</li>
+        <div className="home-container3">
+            {/* Navbar */}
+            <nav className="navbar3">
 
-                        </Link>
-
-                        <Link to="/Schema"  style={{ textDecoration: 'none' }}>
-                            <li>Schema</li>
-                        </Link>
-                    </ul>
-                </nav>
-                <button className="back-button2">
-                    <Link to="/Schema" style={{ textDecoration: 'none' }}>←</Link>
-                </button>
-            </aside>
-
-            <main className="content2">
-                <header>
-                    <img src="profile-pic-url" alt="User" className="profile-pic2" />
-                </header>
-
-                <section className="user-info-section2">
-                    <h1>Issuance</h1>
-
-                    <div className="tabs2">
-                        <button
-                            className={activeTab === "basic" ? "active" : ""}
-                            onClick={() => setActiveTab("basic")}
-                        >
-                            Issued
-                        </button>
-                        <button
-                            className={activeTab === "parent" ? "active" : ""}
-                            onClick={() => setActiveTab("parent")}
-                        >
-                            Issue New
-                        </button>
+                <div className="logo-section3">
+                    <img
+                        src="/logo.png" // Replace with actual logo
+                        alt="Credex Logo"
+                        className="logo3"
+                    />
+                    <Link to="/" style={{ textDecoration: "none" }}>
+                        <span className="brand3">Credex</span>                    </Link>
+                    <div className="navbar-links3">
+                        <a >|</a>
+                        <a href="/Schema" >Schema</a>
+                        <a href="/Issuance" className="active-link">Issuance</a>
                     </div>
+                </div>
 
-                    <div className="info-content2">
-                        {activeTab === "basic" && (
-                            <div>
-                                no schema issued
-                            </div>
-                        )}
+                <ProfileButton />
+            </nav>
 
-                        {activeTab === "parent" && (
-                            <div style={{ maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
-                                <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "10px" }}>
-                                    Select Schema
-                                </label>
-                                <select style={{ width: "100%", padding: "8px", marginBottom: "15px", borderRadius: "10px", border: "1px solid #ccc" }}>
-                                    <option>Select Schema</option>
-                                </select>
+            {/* Main Content */}
+            <div className="content-container3">
+                <div className="content-box3">
+                    <div className="background-overlay3"></div>
+                    <h1 className="title3">Issuance</h1>
+                    <div className="profile-section3">
 
-                                <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "10px" }}>
-                                    Enter Recipient Details
-                                </label>
-                                <input type="text" placeholder="Recipient ID"
-                                    style={{ width: "100%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
-                                />
-
-                                <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "10px" }}>
-                                    Attributes
-                                </label>
-                                <div>
-                                    <label style={{ display: "block", marginBottom: "5px" }}>Degree (attribute 1)</label>
-                                    <input type="text" placeholder="Enter Value"
-                                        style={{ width: "100%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
-                                    />
+                        <main className="content3">
+                            <section className="user-info-section3">
+                                <div className="tabs3">
+                                    <span
+                                        className={activeTab === "basic" ? "active-tab" : ""}
+                                        onClick={() => setActiveTab("basic")}
+                                    >
+                                        Issued
+                                    </span>
+                                    <span
+                                        className={activeTab === "parent" ? "active-tab" : ""}
+                                        onClick={() => setActiveTab("parent")}
+                                    >
+                                        New Issue
+                                    </span>
                                 </div>
-                                <div>
-                                    <label style={{ display: "block", marginBottom: "5px" }}>Name (attribute 2)</label>
-                                    <input type="text" placeholder="Enter Value"
-                                        style={{ width: "100%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
-                                    />
-                                </div>
-                                <button style={{ width: "100%", padding: "10px", backgroundColor: "#6a0dad", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-                                    Submit
-                                </button>
-                            </div>
-                        )}
 
+                                <div className="info-content3">
+                                    {activeTab === "basic" && (
+                                        <div>
+                                            nothing issued yet
+                                        </div>
+                                    )}
+
+                                    {activeTab === "parent" && (
+                                        <div style={{ maxWidth: "300px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
+                                            <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
+                                                Schema Name
+                                            </label>
+                                            <select style={{ width: "86.5%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}>
+                                                <option value="">Select Schema</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+
+                                            <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
+                                                Attributes
+                                            </label>
+                                            {attributes.map((attr, index) => (
+                                                <input key={index} type="text" placeholder={`Enter Attribute ${index + 1}`}
+                                                    style={{ width: "80%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "0.1px solid #ccc" }}
+                                                />
+                                            ))}
+
+                                            <button style={{ width: "60%", padding: "10px", backgroundColor: "#6a0dad", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+                                                Submit
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+                        </main>
                     </div>
-                </section>
-            </main>
+                </div>
+                <div className="logo-center3">
+                    <img
+                        src="/Halflogo.png" // Replace with actual logo
+                        alt="Credex Logo"
+                        className="Centerlogo"
+                    />
+                </div>
+            </div>
         </div>
     );
 };
