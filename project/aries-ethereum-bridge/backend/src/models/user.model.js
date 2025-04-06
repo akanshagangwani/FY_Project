@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  connectionId: {
+    type: String
+  },
+  connectionState: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now

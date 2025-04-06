@@ -52,13 +52,58 @@ export const deployContract = async (req, res) => {
   }
 };
 
-// export const storeCredential = async (req, res) => {
-//   try {
-//     const { credentialId, credentialHash } = req.body;
-//     await academicService.storeCredential(credentialId, credentialHash);
-//     res.status(201).json({ success: true });
-//   } catch (error) {
-//     console.error('Error storing credential:', error.message);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+
+
+export const getConnections = async (req, res) => {
+  try {
+    const result = await academicService.getConnections();
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error getting connections:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const sendInvitationToUser = async (req, res) => {
+  try {
+    // Get user ID from authenticated request
+    const userId = req.user.userId;
+    const result = await academicService.sendConnectionInvitation(userId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error sending invitation:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const acceptUserInvitation = async (req, res) => {
+  try {
+    const { invitationCode } = req.body;
+    const userId = req.user.userId;
+    
+    if (!invitationCode) {
+      return res.status(400).json({ error: 'Invitation code is required' });
+    }
+    
+    const result = await academicService.acceptInvitation(invitationCode, userId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error accepting invitation:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const getConnectionStatus = async (req, res) => {
+  try {
+    const { connectionId } = req.params;
+    const result = await academicService.checkConnectionStatus(connectionId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error getting connection status:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};

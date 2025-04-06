@@ -5,11 +5,15 @@ import path from 'path';
 import solc from 'solc';
 import config from '../config/index.js';
 import { fileURLToPath } from 'url';
+import { sendInvitationEmail } from '../Utils/emailService.js';
+import { User } from '../Utils/mdb.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class AcademicService {
+
+
   constructor() {
     this.schemaName = 'academic_credentials';
     this.schemaVersion = '1.0';
@@ -33,6 +37,9 @@ class AcademicService {
     this.web3 = new web3(config.ETH_RPC_URL || 'http://ganache:8545');
     this.contractInstance = null;
   }
+
+
+
 
 // Deploy the smart contract
 async deploySmartContract() {
@@ -60,7 +67,6 @@ async deploySmartContract() {
     const { object: bytecode } = contract.evm.bytecode;
     const { abi } = contract;
 
-    // Save ABI to file in the smartcontracts directory
     const abiPath = path.join(__dirname, '../smartcontracts/contract-abi.json');
     await fs.writeFile(abiPath, JSON.stringify(abi, null, 2));
     console.log('Contract ABI saved to contract-abi.json');
@@ -73,7 +79,6 @@ async deploySmartContract() {
 
     console.log(`Contract deployed at address: ${deployedContract.options.address}`);
 
-    // Save contract address to a file in the smartcontracts directory
     const addressPath = path.join(__dirname, '../smartcontracts/contract-address.txt');
     await fs.writeFile(addressPath, deployedContract.options.address);
     console.log('Contract address saved to contract-address.txt');
@@ -85,6 +90,9 @@ async deploySmartContract() {
     throw error;
   }
 }
+
+
+
 
   // Initialize the smart contract
   async initializeContract() {
@@ -101,6 +109,95 @@ async deploySmartContract() {
     }
   }
 
+
+
+
+
+// Create a connection invitation and send it via email
+async sendConnectionInvitation(userId) {
+  try {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    const response = await this.ariesClient.post('/connections/create-invitation', {
+      alias: user.email,
+      auto_accept: true,
+      multi_use: false
+    });
+    
+    const invitation = response.data.invitation;
+    const invitationBase64 = Buffer.from(JSON.stringify(invitation)).toString('base64');
+    user.connectionId = response.data.connection_id;
+    user.connectionState = 'pending';
+    await user.save();
+    
+    await sendInvitationEmail(user.email, invitationBase64);
+    
+    return { 
+      message: 'Invitation sent successfully', 
+      email: user.email,
+      connectionId: response.data.connection_id,
+      invitationCode: invitationBase64  // Return the code for testing
+    };
+  } catch (error) {
+    console.error('Error sending connection invitation:', error.message);
+    throw error;
+  }
+}
+
+
+
+
+
+async acceptInvitation(invitationCode, userId) {
+  try {
+    // Find user
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    const invitation = JSON.parse(Buffer.from(invitationCode, 'base64').toString('utf-8'));
+    const response = await this.ariesClient.post('/connections/receive-invitation', invitation);
+    
+    // Store the new connection ID
+    user.connectionId = response.data.connection_id;
+    user.connectionState = 'request-sent';
+    await user.save();
+    
+    return {
+      message: 'Invitation accepted successfully',
+      connectionId: response.data.connection_id,
+      state: response.data.state
+    };
+  } catch (error) {
+    console.error('Error accepting invitation:', error.message);
+    throw error;
+  }
+}
+
+
+
+  // Check connection status
+  async checkConnectionStatus(connectionId) {
+    try {
+      const response = await this.ariesClient.get(`/connections/${connectionId}`);
+      return {
+        connectionId,
+        state: response.data.state,
+        theirLabel: response.data.their_label,
+        createdAt: response.data.created_at
+      };
+    } catch (error) {
+      console.error('Error checking connection status:', error.message);
+      throw error;
+    }
+  }
+
+
+
   // Health check for Aries agent
   async checkAriesHealth() {
     try {
@@ -111,6 +208,20 @@ async deploySmartContract() {
       throw new Error('Failed to connect to Aries agent');
     }
   }
+
+
+// Get all connections
+async getConnections() {
+  try {
+    const response = await this.ariesClient.get('/connections');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting connections:', error.message);
+    throw error;
+  }
+}
+
+
 
   // Create academic schema and credential definition
   async setupAcademicCredentials() {
@@ -135,6 +246,9 @@ async deploySmartContract() {
     }
   }
 
+
+
+
   // Format academic attributes for credential issuance
   formatAcademicAttributes(data) {
     return [
@@ -148,22 +262,22 @@ async deploySmartContract() {
     ];
   }
 
+
+
+
   // Issue academic credential
   async issueCredential(data) {
     try {
       const { connectionId, credentialDefinitionId } = data;
 
-      // Get or create credential definition
       let credDefId = credentialDefinitionId;
       if (!credDefId) {
         const setup = await this.setupAcademicCredentials();
         credDefId = setup.credentialDefinitionId;
       }
 
-      // Format attributes
       const attributes = this.formatAcademicAttributes(data);
 
-      // Issue credential
       const response = await this.ariesClient.post('/issue-credential/send-offer', {
         connection_id: connectionId,
         credential_proposal: { attributes },
@@ -188,6 +302,10 @@ async deploySmartContract() {
       throw error;
     }
   }
+
+
+
+
 
   // Verify academic credential
   async verifyCredential(credentialId) {
