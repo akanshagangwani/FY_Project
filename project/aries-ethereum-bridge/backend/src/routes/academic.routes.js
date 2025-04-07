@@ -1,4 +1,10 @@
 import express from 'express';
+import { getSchemaByUsernameAndLabelController } from '../controllers/academic.controller.js';
+import {
+        saveStudentCredentialValidation,
+        addAttributesValidation,
+    } from '../validation/academic.validation.js';
+import { saveCredentialController, addAttributesController } from '../controllers/academic.controller.js';
 import authenticate from '../middleware/authenticate.js';
 import {
     createSchema,
@@ -42,5 +48,13 @@ router.post('/contract/deploy', deployContract);
 
 // Create invitation for connection
 
+// Route to save a student credential
+router.post('/save-credential',authenticate, saveCredentialController);
+
+// Route to add attributes to an existing credential
+router.post('/add-attributes',authenticate, addAttributesController);
+
+// Route to fetch a schema by username and label
+router.get('/get-schema', authenticate, getSchemaByUsernameAndLabelController);
 
 export default router;
