@@ -16,6 +16,8 @@ import {
     sendInvitationToUser,  
     acceptUserInvitation, 
     getConnectionStatus,
+    getIssuedCredentials,
+    completeConnection
 } from '../controllers/academic.controller.js';
 import { listSchemasByUsernameController } from '../controllers/academic.controller.js';
 import validate from '../middleware/validate.js';
@@ -28,11 +30,12 @@ router.get('/health', checkHealth);
 
 // Connection management
 router.post('/connections/accept-invitation', authenticate, acceptUserInvitation);
+
 router.get('/connections',authenticate, getConnections);
 
 router.post('/connections/send-invitation', authenticate, sendInvitationToUser);
-router.get('/connections/:connectionId/status', authenticate, getConnectionStatus);
 
+router.get('/connections/:connectionId/status', authenticate, getConnectionStatus);
 
 // Create schema
 router.post('/schema', validate({ body: createSchemaValidation }), createSchema);
@@ -46,7 +49,7 @@ router.get('/credential/:credentialId',authenticate, verifyCredential);
 // Deploy smart contract
 router.post('/contract/deploy', deployContract);
 
-// Create invitation for connection
+router.get('/credentials', authenticate, getIssuedCredentials);
 
 // Route to save a student credential
 router.post('/save-schema',authenticate, saveCredentialController);
@@ -59,5 +62,7 @@ router.get('/get-schema', authenticate, getSchemaByUsernameAndLabelController);
 
 // Route to list all schemas under a username
 router.get('/list-schemas', authenticate, listSchemasByUsernameController);
+
+router.post('/connections/:connectionId/complete', authenticate, completeConnection);
 
 export default router;
