@@ -7,6 +7,8 @@ import config from '../config/index.js';
 import { fileURLToPath } from 'url';
 import { sendInvitationEmail } from '../Utils/emailService.js';
 import { User } from '../Utils/mdb.js';
+import StudentCredential from '../models/credSchema.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -430,6 +432,117 @@ async issueCredential(data) {
       console.error('Error verifying academic credential:', error.message);
       throw error;
     }
+  }
+}
+
+/**
+ * Generate and save a skeleton schema.
+ * @param {Object} data - The skeleton schema data.
+ * @returns {Object} - The saved skeleton schema document.
+ */
+export async function saveSkeletonSchema(data) {
+  try {
+    const skeletonSchema = new StudentCredential({
+      username: data.username, // Admin or user creating the schema
+      label: data.label,       // Unique label for the schema
+      studentName: null,       // Skeleton fields are set to null or empty
+      studentId: null,
+      degree: null,
+      graduationDate: null,
+      institution: null,
+      courses: [],
+      gpa: null,
+      credentialId: null,
+      blockchainHash: null,
+      additionalAttributes: {}, // Empty additional attributes
+    });
+
+    const savedSkeleton = await skeletonSchema.save();
+    console.log('Skeleton schema saved to database successfully.');
+    return savedSkeleton;
+  } catch (error) {
+    console.error('Error saving skeleton schema to database:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Add attributes to an existing credential or skeleton schema.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function addAttributes(req, res) {
+  try {
+    const { username, label, additionalAttributes } = req.body;
+
+    // Validate input
+    if (!username || !label) {
+      return res.status(400).json({ message: 'Username and label are required' });
+    }
+
+    // Find the credential by username and label
+    const credential = await StudentCredential.findOne({ username, label });
+    if (!credential) {
+      return res.status(404).json({ message: 'Credential not found for the given username and label' });
+    }
+
+    // Convert additionalAttributes to a Map if it's a plain object
+    if (additionalAttributes && typeof additionalAttributes === 'object' && !additionalAttributes instanceof Map) {
+      credential.additionalAttributes = new Map(Object.entries(additionalAttributes));
+    } else {
+      credential.additionalAttributes = additionalAttributes;
+    }
+
+    // Save the updated credential
+    const updatedCredential = await credential.save();
+    res.status(200).json({ message: 'Attributes added successfully', credential: updatedCredential });
+  } catch (error) {
+    console.error('Error adding attributes:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+/**
+ * Fetch a schema by username and label.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function getSchemaByUsernameAndLabel(username, label, res) {
+  try {
+    const schema = await StudentCredential.findOne({ username, label });
+    if (!schema) {
+      return res.status(404).json({ message: 'Schema not found for the given username and label' });
+    }
+
+    // Return the schema
+    res.status(200).json({ message: 'Schema fetched successfully', schema });
+  } catch (error) {
+    console.error('Error fetching schema:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+/**
+ * List all schema labels under a specific username.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function listSchemasByUsername(username, res) {
+  try {
+    // Find all schemas associated with the username and project only the label field
+    const schemas = await StudentCredential.find({ username }, 'label');
+    if (!schemas || schemas.length === 0) {
+      return res.status(404).json({ message: 'No schemas found for the given username' });
+    }
+
+    // Extract labels from the schemas
+    const labels = schemas.map((schema) => schema.label);
+
+    // Return the list of labels
+    res.status(200).json({ message: 'Labels fetched successfully', labels });
+  } catch (error) {
+    console.error('Error listing schema labels:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
