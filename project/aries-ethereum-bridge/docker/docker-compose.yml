@@ -13,6 +13,8 @@ services:
         --inbound-transport http 0.0.0.0 8030
         --outbound-transport http
         --label "Academic Credentials Issuer"
+        --auto-accept-invites
+        --auto-accept-requests
         --wallet-type indy
         --wallet-name issuer_wallet
         --wallet-key issuer_key

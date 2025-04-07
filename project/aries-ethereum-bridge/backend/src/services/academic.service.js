@@ -238,9 +238,10 @@ async acceptInvitation(invitationCode, issuerId) {
       
       if (connectionResponse.data.state === 'request') {
         // Send request to move from request to response state
-        await this.ariesClient.post(`/connections/${connectionId}/accept-request`);
-        console.log('Request accepted, moving to active state...');
+        console.log('Connection is in request state. Waiting for automatic processing...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
+    
       
       // Check final state
       const finalResponse = await this.ariesClient.get(`/connections/${connectionId}`);
