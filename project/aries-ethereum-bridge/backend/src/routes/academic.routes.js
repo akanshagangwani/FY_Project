@@ -17,7 +17,7 @@ import {
     acceptUserInvitation, 
     getConnectionStatus,
 } from '../controllers/academic.controller.js';
-
+import { listSchemasByUsernameController } from '../controllers/academic.controller.js';
 import validate from '../middleware/validate.js';
 import { createSchema as createSchemaValidation } from '../validation/academic.validation.js';
 
@@ -49,12 +49,15 @@ router.post('/contract/deploy', deployContract);
 // Create invitation for connection
 
 // Route to save a student credential
-router.post('/save-credential',authenticate, saveCredentialController);
+router.post('/save-schema',authenticate, saveCredentialController);
 
 // Route to add attributes to an existing credential
 router.post('/add-attributes',authenticate, addAttributesController);
 
 // Route to fetch a schema by username and label
 router.get('/get-schema', authenticate, getSchemaByUsernameAndLabelController);
+
+// Route to list all schemas under a username
+router.get('/list-schemas', authenticate, listSchemasByUsernameController);
 
 export default router;

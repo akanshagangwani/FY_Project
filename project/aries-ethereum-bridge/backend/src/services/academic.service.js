@@ -418,4 +418,25 @@ export async function getSchemaByUsernameAndLabel(username, label, res) {
   }
 }
 
+/**
+ * List all schemas under a specific username.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function listSchemasByUsername(username, res) {
+  try {
+    // Find all schemas associated with the username
+    const schemas = await StudentCredential.find({ username });
+    if (!schemas || schemas.length === 0) {
+      return res.status(404).json({ message: 'No schemas found for the given username' });
+    }
+
+    // Return the list of schemas
+    res.status(200).json({ message: 'Schemas fetched successfully', schemas });
+  } catch (error) {
+    console.error('Error listing schemas:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 export default new AcademicService();

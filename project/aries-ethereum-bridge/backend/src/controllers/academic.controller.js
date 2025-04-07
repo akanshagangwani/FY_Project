@@ -2,6 +2,7 @@ import academicService from '../services/academic.service.js';
 import { saveSkeletonSchema } from '../services/academic.service.js';
 import { addAttributes } from '../services/academic.service.js';
 import { getSchemaByUsernameAndLabel } from '../services/academic.service.js';
+import { listSchemasByUsername } from '../services/academic.service.js';
 
 export const createSchema = async (req, res) => {
   try {
@@ -144,6 +145,27 @@ export async function getSchemaByUsernameAndLabelController(req, res) {
     // If the schema is found, it will be sent in the response from the service function.
   } catch (error) {
     console.error('Error in getSchemaByUsernameAndLabelController:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+/**
+ * Controller to list all schemas under a specific username.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function listSchemasByUsernameController(req, res) {
+  try {
+    const { username } = req.query;
+
+    // Validate input
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required' });
+    }
+
+    await listSchemasByUsername(username, res);
+  } catch (error) {
+    console.error('Error in listSchemasByUsernameController:', error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
