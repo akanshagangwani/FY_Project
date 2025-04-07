@@ -23,6 +23,7 @@ services:
         --wallet-storage-creds '{"account":"postgres","password":"postgres","admin_account":"postgres","admin_password":"postgres"}'
         --auto-provision
         --genesis-url http://dev.greenlight.bcovrin.vonx.io/genesis
+        --seed 000000000000000000000000Steward1
         --log-level info
     networks:
       - aries-network
