@@ -1,4 +1,8 @@
 import academicService from '../services/academic.service.js';
+import { saveSkeletonSchema } from '../services/academic.service.js';
+import { addAttributes } from '../services/academic.service.js';
+import { getSchemaByUsernameAndLabel } from '../services/academic.service.js';
+import { listSchemasByUsername } from '../services/academic.service.js';
 
 export const createSchema = async (req, res) => {
   try {
@@ -130,6 +134,64 @@ export const getConnectionStatus = async (req, res) => {
   }
 };
 
+
+export async function saveCredentialController(req, res) {
+  try {
+    // Call the service function
+    const savedCredential = await saveSkeletonSchema(req.body);
+    res.status(201).json({ message: 'Credential saved successfully', credential: savedCredential });
+  } catch (error) {
+    console.error('Error saving credential:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+export async function addAttributesController(req, res) {
+  try {
+    // Call the service function
+    await addAttributes(req, res);
+  } catch (error) {
+    console.error('Error adding attributes:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+/**
+ * Controller to fetch a schema by username and label.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function getSchemaByUsernameAndLabelController(req, res) {
+  try {
+    const { username, label } = req.query;
+    await getSchemaByUsernameAndLabel(username, label, res);
+    // If the schema is found, it will be sent in the response from the service function.
+  } catch (error) {
+    console.error('Error in getSchemaByUsernameAndLabelController:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+/**
+ * Controller to list all schemas under a specific username.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+export async function listSchemasByUsernameController(req, res) {
+  try {
+    const { username } = req.query;
+
+    // Validate input
+    if (!username) {
+      return res.status(400).json({ message: 'Username is required' });
+    }
+
+    await listSchemasByUsername(username, res);
+  } catch (error) {
+    console.error('Error in listSchemasByUsernameController:', error.message);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
 
 export const completeConnection = async (req, res) => {
