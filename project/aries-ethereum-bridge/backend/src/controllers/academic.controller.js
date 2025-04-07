@@ -56,7 +56,13 @@ export const deployContract = async (req, res) => {
 
 export const getConnections = async (req, res) => {
   try {
-    const result = await academicService.getConnections();
+    const connections = await academicService.getConnections();
+    
+    const result = {
+      connections,
+      hint: "For issuing credentials, use a connection with state 'active'. If no active connections exist, you need to send an invitation and have it accepted first."
+    };
+    
     res.status(200).json(result);
   } catch (error) {
     console.error('Error getting connections:', error.message);
@@ -67,9 +73,13 @@ export const getConnections = async (req, res) => {
 
 export const sendInvitationToUser = async (req, res) => {
   try {
-    // Get user ID from authenticated request
+    const { Email } = req.body;
+    if (!Email) {
+      return res.status(400).json({ error: 'Recipient email is required' });
+    }
+
     const userId = req.user.userId;
-    const result = await academicService.sendConnectionInvitation(userId);
+    const result = await academicService.sendConnectionInvitation(userId,Email);
     res.status(200).json(result);
   } catch (error) {
     console.error('Error sending invitation:', error.message);
@@ -97,6 +107,18 @@ export const acceptUserInvitation = async (req, res) => {
 
 
 
+export const getIssuedCredentials = async (req, res) => {
+  try {
+    const credentials = await academicService.getIssuedCredentials();
+    res.status(200).json(credentials);
+  } catch (error) {
+    console.error('Error fetching credentials:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 export const getConnectionStatus = async (req, res) => {
   try {
     const { connectionId } = req.params;
@@ -104,6 +126,19 @@ export const getConnectionStatus = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error('Error getting connection status:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+export const completeConnection = async (req, res) => {
+  try {
+    const { connectionId } = req.params;
+    const result = await academicService.completeConnection(connectionId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error completing connection:', error);
     res.status(500).json({ error: error.message });
   }
 };

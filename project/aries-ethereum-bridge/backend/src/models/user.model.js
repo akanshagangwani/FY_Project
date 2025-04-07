@@ -22,10 +22,17 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   connectionId: {
-    type: String
+    type: String,
+    description: "Primary connection ID for this user"
+  },
+  acceptedConnectionId: {
+    type: String,
+    description: "ID of connection created when accepting an invitation (for testing only)"
   },
   connectionState: {
-    type: String
+    type: String,
+    enum: ['invitation-sent', 'request-sent', 'response-received', 'active', 'inactive', 'error'],
+    default: null
   },
   createdAt: {
     type: Date,

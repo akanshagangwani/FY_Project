@@ -10,6 +10,8 @@ import {
     sendInvitationToUser,  
     acceptUserInvitation, 
     getConnectionStatus,
+    getIssuedCredentials,
+    completeConnection
 } from '../controllers/academic.controller.js';
 
 import validate from '../middleware/validate.js';
@@ -40,7 +42,8 @@ router.get('/credential/:credentialId',authenticate, verifyCredential);
 // Deploy smart contract
 router.post('/contract/deploy', deployContract);
 
-// Create invitation for connection
+router.get('/credentials', authenticate, getIssuedCredentials);
 
+router.post('/connections/:connectionId/complete', authenticate, completeConnection);
 
 export default router;

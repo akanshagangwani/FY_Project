@@ -114,7 +114,8 @@ async deploySmartContract() {
 
 
 // Create a connection invitation and send it via email
-async sendConnectionInvitation(userId) {
+// Create a connection invitation and send it via email
+async sendConnectionInvitation(userId, Email) {
   try {
     const user = await User.findOne({ id: userId });
     if (!user) {
@@ -122,24 +123,26 @@ async sendConnectionInvitation(userId) {
     }
     
     const response = await this.ariesClient.post('/connections/create-invitation', {
-      alias: user.email,
+      alias: Email,
       auto_accept: true,
       multi_use: false
     });
     
     const invitation = response.data.invitation;
     const invitationBase64 = Buffer.from(JSON.stringify(invitation)).toString('base64');
+
+    // Store a single connectionId for this relationship
     user.connectionId = response.data.connection_id;
-    user.connectionState = 'pending';
+    user.connectionState = 'invitation-sent';
     await user.save();
     
-    await sendInvitationEmail(user.email, invitationBase64);
+    await sendInvitationEmail(Email, invitationBase64);
     
     return { 
       message: 'Invitation sent successfully', 
-      email: user.email,
+      email: Email,
       connectionId: response.data.connection_id,
-      invitationCode: invitationBase64  // Return the code for testing
+      invitationCode: invitationBase64
     };
   } catch (error) {
     console.error('Error sending connection invitation:', error.message);
@@ -151,26 +154,31 @@ async sendConnectionInvitation(userId) {
 
 
 
-async acceptInvitation(invitationCode, userId) {
+async acceptInvitation(invitationCode, issuerId) {
   try {
-    // Find user
-    const user = await User.findOne({ id: userId });
-    if (!user) {
-      throw new Error('User not found');
+    const issuer = await User.findOne({ id: issuerId });
+    if (!issuer) {
+      throw new Error('Issuer not found');
     }
     
     const invitation = JSON.parse(Buffer.from(invitationCode, 'base64').toString('utf-8'));
+    
+    // This creates a new connection that simulates the holder accepting the invitation
     const response = await this.ariesClient.post('/connections/receive-invitation', invitation);
     
-    // Store the new connection ID
-    user.connectionId = response.data.connection_id;
-    user.connectionState = 'request-sent';
-    await user.save();
+    // Store this as a separate record for testing purposes
+    const acceptedConnectionId = response.data.connection_id;
+    
+    issuer.acceptedConnectionId = acceptedConnectionId;
+    issuer.connectionState = 'request-sent';
+    await issuer.save();
     
     return {
-      message: 'Invitation accepted successfully',
-      connectionId: response.data.connection_id,
-      state: response.data.state
+      message: 'Connection established',
+      connectionId: acceptedConnectionId,
+      state: response.data.state,
+      originalInviterId: issuer.connectionId,
+      note: "For credential issuance, use this returned connectionId"
     };
   } catch (error) {
     console.error('Error accepting invitation:', error.message);
@@ -184,14 +192,65 @@ async acceptInvitation(invitationCode, userId) {
   async checkConnectionStatus(connectionId) {
     try {
       const response = await this.ariesClient.get(`/connections/${connectionId}`);
+      let statusMessage = 'Connection is being established';
+      let isReady = false;
+
+      if (response.data.state === 'active') {
+        statusMessage = 'Connection is active and ready for credential exchange';
+        isReady = true;
+      } else if (response.data.state === 'request') {
+        statusMessage = 'Connection request sent, waiting for response';
+      } else if (response.data.state === 'response') {
+        statusMessage = 'Connection response received, almost complete';
+      } else if (response.data.state === 'invitation') {
+        statusMessage = 'Connection invitation sent, waiting for acceptance';
+      }
       return {
         connectionId,
         state: response.data.state,
-        theirLabel: response.data.their_label,
-        createdAt: response.data.created_at
+        theirLabel: response.data.their_label || null,
+        createdAt: response.data.created_at,
+        statusMessage,
+        isReady,
+        rfc23State: response.data.rfc23_state || null
       };
     } catch (error) {
       console.error('Error checking connection status:', error.message);
+      throw error;
+    }
+  }
+
+
+
+
+  async completeConnection(connectionId) {
+    try {
+      // First try to get the connection status
+      const connectionResponse = await this.ariesClient.get(`/connections/${connectionId}`);
+      
+      console.log(`Connection state: ${connectionResponse.data.state}`);
+      
+      if (connectionResponse.data.state === 'invitation') {
+        // Send request to move from invitation to request state
+        await this.ariesClient.post(`/connections/${connectionId}/accept-invitation`);
+        console.log('Invitation accepted, moving to request state...');
+      }
+      
+      if (connectionResponse.data.state === 'request') {
+        // Send request to move from request to response state
+        await this.ariesClient.post(`/connections/${connectionId}/accept-request`);
+        console.log('Request accepted, moving to active state...');
+      }
+      
+      // Check final state
+      const finalResponse = await this.ariesClient.get(`/connections/${connectionId}`);
+      return {
+        connectionId,
+        state: finalResponse.data.state,
+        isActive: finalResponse.data.state === 'active'
+      };
+    } catch (error) {
+      console.error('Error completing connection:', error);
       throw error;
     }
   }
@@ -208,6 +267,23 @@ async acceptInvitation(invitationCode, userId) {
       throw new Error('Failed to connect to Aries agent');
     }
   }
+
+
+
+
+// Add this method to AcademicService
+async getIssuedCredentials() {
+  try {
+    const response = await this.ariesClient.get('/issue-credential/records');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting credentials:', error.message);
+    throw error;
+  }
+}
+
+
+
 
 
 // Get all connections
