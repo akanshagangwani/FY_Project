@@ -28,6 +28,7 @@ const Issuance = () => {
                         <a >|</a>
                         <a href="/Schema" >Schema</a>
                         <a href="/Issuance" className="active-link">Issuance</a>
+                        <a href="/Connection" >Connections</a>
                     </div>
                 </div>
 
