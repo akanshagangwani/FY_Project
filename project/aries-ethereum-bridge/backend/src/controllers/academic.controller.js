@@ -16,6 +16,7 @@ export const createSchema = async (req, res) => {
 
 export const issueCredential = async (req, res) => {
   try {
+    // Pass the entire request body to the service
     const result = await academicService.issueCredential(req.body);
     res.status(201).json(result);
   } catch (error) {

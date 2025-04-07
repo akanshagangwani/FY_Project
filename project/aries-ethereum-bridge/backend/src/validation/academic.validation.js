@@ -11,16 +11,23 @@ export const createCredentialDefinition = Joi.object({
 });
 
 export const issueCredential = Joi.object({
-  credentialDefinitionId: Joi.string().required(),
+  // Only connectionId is absolutely required
   connectionId: Joi.string().required(),
-  studentName: Joi.string().required(),
-  studentId: Joi.string().required(),
-  degree: Joi.string().required(),
-  graduationDate: Joi.string().required(),
-  institution: Joi.string().required(),
+  
+  // Make credential definition optional (service can handle it)
+  credentialDefinitionId: Joi.string(),
+  
+  // Standard academic attributes - all optional
+  studentName: Joi.string(),
+  studentId: Joi.string(),
+  degree: Joi.string(),
+  graduationDate: Joi.string(),
+  institution: Joi.string(),
   courses: Joi.array().items(Joi.string()),
-  gpa: Joi.string().required()
-});
+  gpa: Joi.string()
+})
+// Allow any additional fields beyond the defined schema
+.unknown(true);
 
 export const verifyCredential = Joi.object({
   credentialId: Joi.string().required()

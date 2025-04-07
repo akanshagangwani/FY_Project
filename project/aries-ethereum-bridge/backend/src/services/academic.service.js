@@ -302,29 +302,99 @@ async getConnections() {
 
 
 
-  // Create academic schema and credential definition
-  async setupAcademicCredentials() {
+async setupAcademicCredentials() {
+  try {
+    // Generate a unique version using timestamp to avoid conflicts
+    const uniqueVersion = `1.${Math.floor(Date.now() / 1000)}`;
+    console.log(`Creating schema ${this.schemaName} with unique version ${uniqueVersion}`);
+    
+    // Create schema
+    const schemaResponse = await this.ariesClient.post('/schemas', {
+      schema_name: this.schemaName,
+      schema_version: uniqueVersion,
+      attributes: this.attributes,
+    });
+    
+    this.schemaId = schemaResponse.data.schema_id;
+    console.log(`Created schema with ID: ${this.schemaId}`);
+    
+    // Wait for schema to propagate on the ledger
+    console.log('Waiting for schema to propagate on the ledger...');
+    await this.waitForSchemaPropagation(this.schemaId);
+    
+    // Retry mechanism for credential definition creation
+    console.log(`Creating credential definition for schema ${this.schemaId}`);
+    this.credDefId = await this.retryCredentialDefinitionCreation(this.schemaId);
+    
+    console.log(`Created credential definition with ID: ${this.credDefId}`);
+    return {
+      schemaId: this.schemaId,
+      credentialDefinitionId: this.credDefId,
+    };
+  } catch (error) {
+    console.error('Error setting up academic credentials:', error.message);
+    
+    // If schema creation fails, try to find existing credential definitions
+    console.log('Looking for existing credential definitions...');
     try {
-      const schemaResponse = await this.ariesClient.post('/schemas', {
-        schema_name: this.schemaName,
-        schema_version: this.schemaVersion,
-        attributes: this.attributes,
-      });
-
-      const credDefResponse = await this.ariesClient.post('/credential-definitions', {
-        schema_id: schemaResponse.data.schema_id,
-      });
-
-      return {
-        schemaId: schemaResponse.data.schema_id,
-        credentialDefinitionId: credDefResponse.data.credential_definition_id,
-      };
-    } catch (error) {
-      console.error('Error setting up academic credentials:', error.message);
-      throw error;
+      const searchResponse = await this.ariesClient.get('/credential-definitions/created');
+      
+      if (searchResponse.data && 
+          searchResponse.data.credential_definition_ids && 
+          searchResponse.data.credential_definition_ids.length > 0) {
+        this.credDefId = searchResponse.data.credential_definition_ids[0];
+        console.log(`Using existing credential definition: ${this.credDefId}`);
+        
+        return {
+          message: 'Using existing credential definition',
+          credentialDefinitionId: this.credDefId,
+        };
+      } else {
+        throw new Error('No existing credential definitions found.');
+      }
+    } catch (fallbackError) {
+      console.error('Error finding existing credential definitions:', fallbackError.message);
+      throw new Error('Unable to create schema or find existing credential definitions');
     }
   }
+}
 
+// Helper method to wait for schema propagation
+async waitForSchemaPropagation(schemaId, retries = 5, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`Checking schema availability (attempt ${i + 1}/${retries})...`);
+      const response = await this.ariesClient.get(`/schemas/${schemaId}`);
+      if (response.data) {
+        console.log('Schema is now available on the ledger.');
+        return;
+      }
+    } catch (error) {
+      console.log('Schema not yet available, retrying...');
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  throw new Error(`Schema ${schemaId} is not available on the ledger after ${retries} retries.`);
+}
+
+// Helper method to retry credential definition creation
+async retryCredentialDefinitionCreation(schemaId, retries = 5, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`Attempting to create credential definition (attempt ${i + 1}/${retries})...`);
+      const credDefResponse = await this.ariesClient.post('/credential-definitions', {
+        schema_id: schemaId,
+        tag: 'default',
+        support_revocation: false,
+      });
+      return credDefResponse.data.credential_definition_id;
+    } catch (error) {
+      console.log('Credential definition creation failed, retrying...');
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  throw new Error(`Unable to create credential definition for schema ${schemaId} after ${retries} retries.`);
+}
 
 
 
@@ -344,73 +414,105 @@ async getConnections() {
 
 
 
-  // Issue academic credential
-// Issue academic credential
-async issueCredential(data) {
+
+// Modify the issueCredential method to take data directly from frontend
+async issueCredential(credentialData) {
   try {
-    const { connectionId, credentialDefinitionId } = data;
-
-    // ADDED: Force connection activation before issuing credential
+    const { connectionId, ...attributes } = credentialData;
+    
+    // Get credential definition (either existing or create new)
+    let credDefId;
     try {
-      console.log(`Force activating connection ${connectionId} before credential issuance`);
-      await this.completeConnection(connectionId);
-    } catch (activationError) {
-      console.log('Connection activation attempted but failed (continuing anyway):', activationError.message);
-    }
-
-    let credDefId = credentialDefinitionId;
-    if (!credDefId) {
+      // Try to use an existing credential definition
+      const createdResponse = await this.ariesClient.get('/credential-definitions/created');
+      if (createdResponse.data.credential_definition_ids && 
+          createdResponse.data.credential_definition_ids.length > 0) {
+        credDefId = createdResponse.data.credential_definition_ids[0];
+        console.log(`Using existing credential definition: ${credDefId}`);
+      } else {
+        // No credential definition exists, create schema and credential definition
+        const setup = await this.setupAcademicCredentials();
+        credDefId = setup.credentialDefinitionId;
+      }
+    } catch (error) {
+      console.log('Error checking existing credential definitions, creating new one');
       const setup = await this.setupAcademicCredentials();
       credDefId = setup.credentialDefinitionId;
     }
-
-    const attributes = this.formatAcademicAttributes(data);
-
-    console.log(`Issuing credential to connection ${connectionId} with definition ${credDefId}`);
     
-    // MODIFIED: Added error handling for ACA-Py rejection
-    try {
-      const response = await this.ariesClient.post('/issue-credential/send-offer', {
-        connection_id: connectionId,
-        credential_proposal: { attributes },
-        credential_definition_id: credDefId,
-        auto_remove: false,
-        trace: true,
-      });
-
-      // Hash and store credential on blockchain
-      const credentialHash = this.web3.utils.sha3(JSON.stringify(response.data));
-      const accounts = await this.web3.eth.getAccounts();
-      await this.contractInstance.methods
-        .storeCredential(response.data.credential_exchange_id, credentialHash)
-        .send({ from: accounts[0], gas: 2000000 });
-
-      return {
-        credentialId: response.data.credential_exchange_id,
-        blockchain: { credentialHash },
-      };
-    } catch (credentialError) {
-      console.error('ACA-Py rejected credential issuance:', credentialError.message);
-      
-      if (credentialError.response && credentialError.response.data) {
-        console.error('Detailed error:', credentialError.response.data);
+    // Format attributes from incoming data
+    const formattedAttributes = this.formatCredentialAttributes(attributes);
+    
+    // Issue credential
+    console.log(`Issuing credential to connection ${connectionId} with definition ${credDefId}`);
+    const response = await this.ariesClient.post('/issue-credential/send-offer', {
+      connection_id: connectionId,
+      credential_proposal: { attributes: formattedAttributes },
+      credential_definition_id: credDefId,
+      auto_remove: false,
+      trace: true,
+    });
+    
+    // Store credential hash on blockchain
+    const credentialHash = this.web3.utils.sha3(JSON.stringify(response.data));
+    const accounts = await this.web3.eth.getAccounts();
+    const transaction = await this.contractInstance.methods
+      .storeCredential(response.data.credential_exchange_id, credentialHash)
+      .send({ from: accounts[0], gas: 2000000 });
+    
+    // Store in MongoDB for application reference
+    const credentialRecord = new StudentCredential({
+      username: attributes.studentName || 'Unknown',
+      label: attributes.degree || 'Credential',
+      studentName: attributes.studentName,
+      studentId: attributes.studentId,
+      degree: attributes.degree,
+      graduationDate: attributes.graduationDate,
+      institution: attributes.institution,
+      courses: attributes.courses || [],
+      gpa: attributes.gpa,
+      credentialId: response.data.credential_exchange_id,
+      blockchainHash: credentialHash,
+      additionalAttributes: {},
+    });
+    await credentialRecord.save();
+    
+    return {
+      credentialExchangeId: response.data.credential_exchange_id,
+      state: response.data.state,
+      blockchain: {
+        transactionHash: transaction.transactionHash,
+        credentialHash: credentialHash
       }
-      
-      // TESTING ONLY: Use this approach only for testing
-      return {
-        status: 'error',
-        message: 'Credential issuance failed but this is expected during testing with non-active connections',
-        error: credentialError.message,
-        note: 'In production, fix the connection activation issue instead of bypassing it'
-      };
-    }
+    };
   } catch (error) {
-    console.error('Error issuing academic credential:', error.message);
+    console.error('Error issuing credential:', error);
     throw error;
   }
 }
 
-
+// New helper method to format any incoming attributes
+formatCredentialAttributes(attributes) {
+  const formattedAttributes = [];
+  
+  // Convert standard academic attributes
+  if (attributes.studentName) formattedAttributes.push({ name: 'student_name', value: attributes.studentName });
+  if (attributes.studentId) formattedAttributes.push({ name: 'student_id', value: attributes.studentId });
+  if (attributes.degree) formattedAttributes.push({ name: 'degree', value: attributes.degree });
+  if (attributes.graduationDate) formattedAttributes.push({ name: 'graduation_date', value: attributes.graduationDate });
+  if (attributes.institution) formattedAttributes.push({ name: 'institution', value: attributes.institution });
+  if (attributes.courses) formattedAttributes.push({ name: 'courses', value: JSON.stringify(attributes.courses || []) });
+  if (attributes.gpa) formattedAttributes.push({ name: 'gpa', value: attributes.gpa.toString() });
+  
+  // Add any additional attributes that might be in the data
+  Object.entries(attributes).forEach(([key, value]) => {
+    if (!['studentName', 'studentId', 'degree', 'graduationDate', 'institution', 'courses', 'gpa', 'connectionId'].includes(key)) {
+      formattedAttributes.push({ name: key, value: typeof value === 'object' ? JSON.stringify(value) : String(value) });
+    }
+  });
+  
+  return formattedAttributes;
+}
 
 
   // Verify academic credential
