@@ -16,7 +16,7 @@ const Schema = () => {
         <div className="home-container3">
             {/* Navbar */}
             <nav className="navbar3">
-               
+
                 <div className="logo-section3">
                     <img
                         src="/logo.png" // Replace with actual logo
@@ -24,15 +24,15 @@ const Schema = () => {
                         className="logo3"
                     />
                     <Link to="/" style={{ textDecoration: "none" }}>
-                    <span className="brand3">Credex</span>                    </Link>
+                        <span className="brand3">Credex</span>                    </Link>
                     <div className="navbar-links3">
-                <a >|</a>
-                <a href="/Schema" className="active-link">Schema</a>
-                <a href="/Issuance">Issuance</a>
+                        <a >|</a>
+                        <a href="/Schema" className="active-link">Schema</a>
+                        <a href="/Issuance">Issuance</a>
+                    </div>
                 </div>
-                </div>
-               
-                <ProfileButton/>
+
+                <ProfileButton />
             </nav>
 
             {/* Main Content */}
@@ -51,7 +51,7 @@ const Schema = () => {
                                     >
                                         Existing Schema
                                     </span>
-                                    
+
                                     <span
                                         className={activeTab === "parent" ? "active-tab" : ""}
                                         onClick={() => setActiveTab("parent")}
@@ -68,7 +68,18 @@ const Schema = () => {
                                     )}
 
                                     {activeTab === "parent" && (
+
+
                                         <div style={{ maxWidth: "300px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
+
+                                            <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
+                                                Select Schema 
+                                            </label>
+                                            <select style={{ width: "86.5%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}>
+                                                <option value="">Select Schema</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
                                             <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
                                                 Schema Name
                                             </label>
