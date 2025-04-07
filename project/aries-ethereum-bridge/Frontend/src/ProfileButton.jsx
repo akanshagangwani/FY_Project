@@ -18,6 +18,7 @@ const ProfileButton = () => {
 
   const handleSignOut = () => {
     // Sign out logic here
+    localStorage.removeItem('token');
     console.log("Sign out clicked");
     navigate("/");
   };

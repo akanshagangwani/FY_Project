@@ -18,12 +18,12 @@ function LoginPage() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
+  
     if (!email || !password) {
       toast.error('Please fill in both fields.');
       return;
     }
-
+  
     try {
       const response = await fetch('http://localhost:3001/credex/auth/login', {
         method: 'POST',
@@ -33,8 +33,12 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-
+  
       if (response.ok) {
+        const token = data.token;
+        const username = data.username;
+        localStorage.setItem('token', token);
+        localStorage.setItem('username', username); // Store the username
         toast.success('Login Successful!');
         navigate('/dashboard');
       } else {

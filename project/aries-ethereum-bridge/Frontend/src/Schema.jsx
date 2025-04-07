@@ -10,10 +10,27 @@ const Schema = () => {
   const [selectedSchema, setSelectedSchema] = useState('');
   const [schemaName, setSchemaName] = useState('');
 
+  const getHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+  };
+
   useEffect(() => {
-    fetch('http://localhost:3001/credex/academic/list-schemas?username=admin1')
-      .then(response => response.json())
-      .then(data => setSchemas(data.labels));
+    const headers = getHeaders();
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:3001/credex/academic/list-schemas?username=admin1', {
+        method: 'GET',
+        headers: headers
+      });
+      const data = await response.json();
+      console.log(data); // Verify the data is being retrieved correctly
+      console.log(data.labels); // Verify the data is being retrieved correctly
+      setSchemas(data.labels);
+    };
+    fetchData();
   }, []);
 
   const addAttribute = () => {
@@ -21,9 +38,36 @@ const Schema = () => {
   };
 
   const handleSchemaChange = (event) => {
-    setSelectedSchema(event.target.value);
+    const selectedSchema = event.target.value;
+    fetchApi(selectedSchema);
+    setSelectedSchema(selectedSchema);
   };
 
+  const handleAttributeChange = (event, index) => {
+    const newAttributes = [...attributes];
+    newAttributes[index] = event.target.value;
+    setAttributes(newAttributes);
+  };
+
+  const attributesList = [
+    "Student Name",
+    "Student Id",
+    "Degree",
+    "Graduation Date",
+    "Institution",
+    "Courses",
+    "GPA",  
+  ];
+  
+  
+  const fetchApi = (schema) => {
+    const username = localStorage.getItem('username');
+
+    fetch(`http://localhost:3001/credex/academic/get-schema?username=${username}&label=${schema}`)
+    .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  };
   const handleSchemaNameChange = (event) => {
     setSchemaName(event.target.value);
   };
@@ -73,18 +117,16 @@ const Schema = () => {
                     className={activeTab === "parent" ? "active-tab" : ""}
                     onClick={() => setActiveTab("parent")}
                   >
-                    New Schema
                   </span>
                 </div>
 
                 <div className="info-content3">
-                  {activeTab === "basic" && (
+                  {activeTab === "parent" && (
                     <div>
-                      No Exisiting Schema
                     </div>
                   )}
 
-                  {activeTab === "parent" && (
+                  {activeTab === "basic" && (
                     <div style={{ maxWidth: "300px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
                       <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
                         Select Schema
@@ -92,30 +134,48 @@ const Schema = () => {
                       <select style={{ width: "86.5%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
                         value={selectedSchema} onChange={handleSchemaChange}>
                         <option value="">Select Schema</option>
-                        {schemas.map((schema, index) => (
+                        {schemas && schemas.map((schema, index) => (
                           <option key={index} value={schema}>{schema}</option>
                         ))}
                       </select>
                       <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
                         Schema Name
                       </label>
-                      <input type="text" placeholder="Enter Schema name"
-                        style={{ width: "80%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
-                        value={schemaName} onChange={handleSchemaNameChange} />
+                      <input
+      type="text"
+      placeholder="Enter Schema name"
+      style={{
+        width: "80%",
+        padding: "8px",
+        marginBottom: "15px",
+        borderRadius: "5px",
+        border: "1px solid #ccc",
+      }}
+      value={schemaName}
+      onChange={handleSchemaNameChange}
+    />
+    {attributesList.map((attribute, index) => (
+      <div key={index}>
+        <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
+          {attribute}
+        </label>
+        <input
+          type="text"
+          placeholder={`Enter ${attribute}`}
+          style={{
+            width: "80%",
+            padding: "8px",
+            marginBottom: "15px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+          value={attributes[index]}
+          onChange={(event) => handleAttributeChange(event, index)}
+        />
+      </div>
+    ))}                 
 
-                      <label style={{ fontWeight: "bold", color: "#6a0dad", display: "block", marginBottom: "5px" }}>
-                        Attributes
-                      </label>
-                      {attributes.map((attr, index) => (
-                        <input key={index} type="text" placeholder={`Enter Attribute ${index + 1}`}
-                          style={{ width: "80%", padding: "8px", marginBottom: "15px", borderRadius: "5px", border: "0.1px solid #ccc" }}
-                        />
-                      ))}
-
-                      <button onClick={addAttribute} style={{ width: "60%", padding: "10px", backgroundColor: "#6a0dad", color: "white", border: "none", borderRadius: "5px", cursor: "pointer", marginBottom: "10px" }}>
-                        + Add Attribute
-                      </button>
-                      <button style={{ width: "60%", padding: "10px", backgroundColor: "#6a0dad", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+                      <button style={{ width: "60%", padding: "10px", backgroundColor: "#6a0dad", color: "white", border: "none", borderRadius: "5px", cursor: "pointer",marginTop:"20px" }}>
                         Submit
                       </button>
                     </div>

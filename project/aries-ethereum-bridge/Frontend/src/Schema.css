@@ -48,6 +48,10 @@
   display: flex;
   margin-top: 40px;
   width: 100vw;
+  overflow-y: auto; /* Add this line to make the content container scrollable */
+  height: 80vh;
+  overflow-x: hidden; /* Hide the horizontal scroll bar */
+
 }
 
 .brand3 {
